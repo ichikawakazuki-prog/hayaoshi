@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Fantasy Quizzes Kingdom",
   description: "リアルタイムで競い合う、魔法と知略の早押しクイズ。仲間と共に究極の賢者を目指せ。",
+  other: {
+    "google-adsense-account": "ca-pub-3577742758028719",
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +37,6 @@ export default function RootLayout({
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3577742758028719"
           crossOrigin="anonymous"
-          strategy="lazyOnload"
         />
         <AuthProvider>
           {children}
