@@ -53,19 +53,29 @@ export default function HostPlay() {
     }, [roomId, user, authLoading, router]);
 
     useEffect(() => {
-        if (room?.currentPhase === "question" && timeLeft > 0) {
+        if (room?.currentPhase === "question" && questions.length > 0) {
             const interval = setInterval(() => {
-                const elapsed = (Date.now() - room.startTime) / 1000;
+                const startTime = room.startTime || Date.now(); // Fallback if missing, though ideally shouldn't happen
+                const elapsed = (Date.now() - startTime) / 1000;
                 const q = questions[room.currentQuestionIndex];
-                const remaining = Math.max(0, (q?.timeLimit || 0) - elapsed);
+                const timeLimit = q?.timeLimit || 20; // Default 20s
+
+                const remaining = Math.max(0, timeLimit - elapsed);
 
                 if (remaining <= 0) {
                     clearInterval(interval);
-                    handleTimeUp();
+                    // Only auto-advance if we were counting down. 
+                    // Use a ref or check if we haven't already marked as done?
+                    // Ideally handleTimeUp() is safe to call multiple times as it checks phase.
+                    if (timeLeft > 0) {
+                        handleTimeUp();
+                    }
                 }
                 setTimeLeft(remaining);
             }, 100);
             return () => clearInterval(interval);
+        } else if (room?.currentPhase !== "question") {
+            setTimeLeft(0);
         }
     }, [room?.currentPhase, room?.startTime, questions, room?.currentQuestionIndex]);
 

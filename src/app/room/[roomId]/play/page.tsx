@@ -93,10 +93,11 @@ export default function GuestPlay() {
     }, [room?.currentQuestionIndex, roomId]);
 
     useEffect(() => {
-        if (room?.currentPhase === "question" && timeLeft > 0) {
+        if (room?.currentPhase === "question" && currentQuestion) {
             const interval = setInterval(() => {
-                const elapsed = (Date.now() - room.startTime) / 1000;
-                const remaining = Math.max(0, (currentQuestion?.timeLimit || 0) - elapsed);
+                const startTime = room.startTime || Date.now();
+                const elapsed = (Date.now() - startTime) / 1000;
+                const remaining = Math.max(0, (currentQuestion.timeLimit || 20) - elapsed);
                 setTimeLeft(remaining);
                 if (remaining <= 0) clearInterval(interval);
             }, 100);
