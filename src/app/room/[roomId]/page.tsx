@@ -82,9 +82,9 @@ export default function GuestLobby() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
                 <Card className="fantasy-card border-none bg-black/40 text-center p-12">
-                    <h1 className="text-3xl font-black gold-text mb-4">異次元の扉</h1>
-                    <p className="text-amber-200/50 mb-8 font-bold">その召喚コードに対応する世界は見つかりませんでした...</p>
-                    <Button onClick={() => router.push("/")} className="fantasy-button px-10">拠点に戻る</Button>
+                    <h1 className="text-3xl font-black gold-text mb-4">ルームが見つかりません</h1>
+                    <p className="text-amber-200/50 mb-8 font-bold">指定された参加コードのルームは見つかりませんでした。</p>
+                    <Button onClick={() => router.push("/")} className="fantasy-button px-10">ホームに戻る</Button>
                 </Card>
             </div>
         );
@@ -102,17 +102,17 @@ export default function GuestLobby() {
                             animate={{ y: 0, opacity: 1 }}
                             className="text-4xl font-black gold-text italic tracking-[0.2em] uppercase"
                         >
-                            冒険者の登録
+                            参加登録
                         </motion.h1>
-                        <p className="text-amber-200/50 text-sm font-bold tracking-widest">試練に挑むための姿と名前を決めましょう</p>
+                        <p className="text-amber-200/50 text-sm font-bold tracking-widest">クイズに参加するための名前とアイコンを決めましょう</p>
                     </header>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <Card className="fantasy-card border-none bg-black/40 p-8 space-y-8">
                             <div className="space-y-4">
-                                <label className="rpg-label">英雄の名 (ニックネーム)</label>
+                                <label className="rpg-label">ニックネーム</label>
                                 <Input
-                                    placeholder="名前を入力せよ..."
+                                    placeholder="名前を入力..."
                                     value={nickname}
                                     onChange={(e) => setNickname(e.target.value)}
                                     className="h-14 bg-black/40 border-amber-900/50 text-white text-xl focus:border-amber-500 transition-colors"
@@ -121,14 +121,14 @@ export default function GuestLobby() {
 
                             <div className="pt-6 border-t border-white/5 space-y-4 text-center">
                                 <p className="text-amber-200/30 text-xs italic leading-relaxed">
-                                    名前と姿が決まれば、いかなる試練も乗り越えられるはずです。
+                                    入力した名前はランキングや結果画面に表示されます。
                                 </p>
                                 <Button
                                     onClick={handleJoin}
                                     disabled={!nickname || !selectedIcon}
                                     className="w-full h-20 text-xl font-black fantasy-button group"
                                 >
-                                    参戦を表明する <Sword className="ml-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
+                                    参加する <Sword className="ml-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
                                 </Button>
                             </div>
                         </Card>
@@ -136,7 +136,7 @@ export default function GuestLobby() {
                         <Card className="fantasy-card border-none bg-black/60 p-6">
                             <CardHeader className="p-0 pb-4">
                                 <CardTitle className="text-lg font-bold flex items-center justify-between">
-                                    <span className="gold-text italic">秘伝のポートレート</span>
+                                    <span className="gold-text italic">アイコン選択</span>
                                     <Badge variant="outline" className="text-amber-500 border-amber-900/50">{selectedIcon ? "準備完了" : "未選択"}</Badge>
                                 </CardTitle>
                             </CardHeader>
@@ -179,13 +179,13 @@ export default function GuestLobby() {
                             <Shield className="h-8 w-8" />
                         </div>
                     </div>
-                    <h1 className="text-5xl font-black gold-text italic mb-4">{nickname} どの</h1>
-                    <p className="text-amber-200/50 font-bold tracking-[0.3em] uppercase">試練への参戦が承認されました</p>
+                    <h1 className="text-5xl font-black gold-text italic mb-4">{nickname} さん</h1>
+                    <p className="text-amber-200/50 font-bold tracking-[0.3em] uppercase">ルームへの参加が完了しました</p>
                 </div>
 
                 <Card className="fantasy-card border-none bg-black/60 p-10 relative overflow-visible">
                     <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-8 py-2 bg-amber-950 border-2 border-amber-500 rounded-full text-amber-500 font-bold tracking-widest text-xs uppercase shadow-xl">
-                        Current Status
+                        現在のステータス
                     </div>
 
                     <div className="space-y-6 pt-4">
@@ -195,11 +195,11 @@ export default function GuestLobby() {
                                 <div className="h-4 w-4 bg-amber-500 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.8)]"></div>
                             </div>
                             <p className="text-3xl font-black tracking-tight text-white uppercase italic">
-                                マスターの開始合図を待機中...
+                                ホストの開始合図を待機中...
                             </p>
                         </div>
                         <p className="text-amber-200/30 text-sm leading-relaxed max-w-md mx-auto italic">
-                            「間もなく、古の試練が始まります。心の準備はよろしいですか？ ギルドマスターが鍵を回したその瞬間、全てが動き出します。」
+                            間もなくクイズが開始されます。そのままお待ちください。
                         </p>
                     </div>
 
@@ -209,8 +209,8 @@ export default function GuestLobby() {
                             <p className="font-mono text-xl font-black text-amber-500">{roomId}</p>
                         </div>
                         <div className="text-left p-4 rounded-xl bg-black/20">
-                            <p className="rpg-label mb-0">ギルド名</p>
-                            <p className="font-black text-white truncate italic">Shibaura Guild</p>
+                            <p className="rpg-label mb-0">ルーム名</p>
+                            <p className="font-black text-white truncate italic">Fantasy Quizzes Kingdom</p>
                         </div>
                     </div>
                 </Card>

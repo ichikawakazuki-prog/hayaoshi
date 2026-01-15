@@ -54,8 +54,8 @@ export default function GuestResults() {
                     >
                         <Trophy className="h-20 w-20 text-amber-500 mx-auto drop-shadow-[0_0_30px_rgba(251,191,36,0.6)]" />
                     </motion.div>
-                    <h1 className="text-5xl font-black italic gold-text tracking-widest uppercase mb-2">終焉と栄光</h1>
-                    <p className="text-amber-200/50 font-bold tracking-[0.2em] uppercase">試練を乗り越えし、冒険者たちの記録</p>
+                    <h1 className="text-5xl font-black italic gold-text tracking-widest uppercase mb-2">最終結果</h1>
+                    <p className="text-amber-200/50 font-bold tracking-[0.2em] uppercase">参加者たちの最終記録</p>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -82,19 +82,19 @@ export default function GuestResults() {
                                 <div className="space-y-1">
                                     <p className="text-2xl font-black text-white">{myPlayer.name} 様</p>
                                     <p className="text-amber-200/40 text-sm italic font-bold">
-                                        {myRank === 1 ? "この世に並ぶ者なき、伝説の覇者" :
-                                            myRank! <= 3 ? "王国中にその名を轟かす、英雄" :
-                                                "次なる試練での飛躍を誓いし、勇者"}
+                                        {myRank === 1 ? "優勝おめでとうございます！" :
+                                            myRank! <= 3 ? "TOP3入賞おめでとう！" :
+                                                "ナイスチャレンジ！"}
                                     </p>
                                 </div>
 
                                 <div className="pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
                                     <div className="text-left p-4 rounded-xl bg-black/30 border border-white/5">
-                                        <p className="rpg-label text-[10px]">戦績 (Score)</p>
+                                        <p className="rpg-label text-[10px]">スコア (Score)</p>
                                         <p className="font-mono text-2xl font-black text-amber-400">{myPlayer.score.toLocaleString()} pt</p>
                                     </div>
                                     <div className="text-left p-4 rounded-xl bg-black/30 border border-white/5">
-                                        <p className="rpg-label text-[10px]">詠唱速度 (Time)</p>
+                                        <p className="rpg-label text-[10px]">合計時間 (Time)</p>
                                         <p className="font-mono text-2xl font-black text-white">{myPlayer.totalTime.toFixed(1)}s</p>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ export default function GuestResults() {
                     <div className="space-y-6">
                         <h2 className="gold-text text-2xl font-black italic flex items-center gap-3 tracking-widest uppercase">
                             <Crown className="h-7 w-7 text-amber-500" />
-                            栄誉の殿堂
+                            ランキング
                         </h2>
                         <div className="space-y-4">
                             {topThree.map((player, idx) => (
@@ -120,8 +120,8 @@ export default function GuestResults() {
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${idx === 0 ? "bg-amber-500 text-black shadow-[0_0_10px_rgba(251,191,36,0.5)]" :
-                                                idx === 1 ? "bg-slate-300 text-black" :
-                                                    idx === 2 ? "bg-amber-800 text-white" : ""
+                                            idx === 1 ? "bg-slate-300 text-black" :
+                                                idx === 2 ? "bg-amber-800 text-white" : ""
                                             }`}>
                                             {idx + 1}
                                         </div>
@@ -139,10 +139,10 @@ export default function GuestResults() {
 
                 <div className="pt-12 flex flex-col items-center gap-6">
                     <Button onClick={() => router.push("/")} className="fantasy-button h-16 px-16 text-xl group">
-                        <Home className="mr-3 h-6 w-6" /> 拠点へ帰還する
+                        <Home className="mr-3 h-6 w-6" /> ホームへ戻る
                     </Button>
                     <p className="text-white/20 text-[10px] font-black tracking-[0.6em] uppercase flex items-center gap-4">
-                        <Scroll className="h-3 w-3" /> The Adventure Continues...
+                        <Scroll className="h-3 w-3" /> Thank you for playing!
                     </p>
                 </div>
             </div>

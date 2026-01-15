@@ -139,7 +139,7 @@ export default function GuestPlay() {
     if (!room || !currentQuestion || !player) return (
         <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 gap-6">
             <Sparkles className="h-12 w-12 text-amber-500 animate-spin" />
-            <p className="text-amber-200/50 font-black tracking-widest animate-pulse">試練を読み込み中...</p>
+            <p className="text-amber-200/50 font-black tracking-widest animate-pulse">クイズを読み込み中...</p>
         </div>
     );
 
@@ -153,7 +153,7 @@ export default function GuestPlay() {
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <img src={player.iconUrl} className="w-12 h-12 rounded-xl border border-amber-500 bg-black/40" alt="" />
-                            <Badge className="absolute -bottom-2 -right-2 bg-amber-500 text-black border-none text-[10px] px-1 font-black">LV.1</Badge>
+                            <Badge className="absolute -bottom-2 -right-2 bg-amber-500 text-black border-none text-[10px] px-1 font-black">PLAYER</Badge>
                         </div>
                         <div>
                             <p className="text-xs text-amber-500 font-black uppercase tracking-widest">{player.name}</p>
@@ -164,7 +164,7 @@ export default function GuestPlay() {
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="rpg-label !mb-0 text-[10px]">詠唱時間 (残り秒数)</p>
+                        <p className="rpg-label !mb-0 text-[10px]">残り時間</p>
                         <div className="flex items-center gap-2">
                             <Timer className={`h-5 w-5 ${timeLeft < 5 ? "text-red-500 animate-pulse" : "text-amber-400"}`} />
                             <span className={`text-2xl font-black font-mono tracking-tighter ${timeLeft < 5 ? "text-red-500" : "text-white"}`}>
@@ -189,7 +189,7 @@ export default function GuestPlay() {
                         className="w-full max-w-xl mx-auto"
                     >
                         <Card className="fantasy-card border-none bg-black/60 p-8 shadow-2xl">
-                            <div className="absolute top-2 left-4 text-[10px] font-black italic gold-text tracking-[0.3em] uppercase opacity-50">Trial No. {room.currentQuestionIndex + 1}</div>
+                            <div className="absolute top-2 left-4 text-[10px] font-black italic gold-text tracking-[0.3em] uppercase opacity-50">Question {room.currentQuestionIndex + 1}</div>
                             <CardContent className="p-0 text-center">
                                 <h2 className="text-3xl font-black leading-tight italic gold-text drop-shadow-lg mb-4">
                                     {currentQuestion.text}
@@ -275,7 +275,7 @@ export default function GuestPlay() {
                     >
                         <div className="bg-amber-950/80 border border-amber-500 px-8 py-3 rounded-full text-amber-500 font-bold uppercase tracking-widest text-sm flex items-center gap-3">
                             <Sparkles className="h-4 w-4 animate-spin-slow" />
-                            他の冒険者の戦果を待機中...
+                            他の参加者の解答を待機中...
                         </div>
                     </motion.div>
                 )}

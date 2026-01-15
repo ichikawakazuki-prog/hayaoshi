@@ -262,13 +262,13 @@ export default function QuizEditor() {
                         <div>
                             <h1 className="text-3xl font-black gold-text italic flex items-center gap-3">
                                 <Scroll className="h-8 w-8 text-amber-500" />
-                                試練の内容を編集
+                                クイズの内容を編集
                             </h1>
-                            <p className="text-amber-200/50 text-sm">冒険者たちに与える謎を作成してください</p>
+                            <p className="text-amber-200/50 text-sm">参加者に出題するクイズを作成してください。</p>
                         </div>
                     </div>
                     <Button onClick={handleSaveAll} className="fantasy-button px-8 h-14 text-lg">
-                        <Save className="mr-2 h-5 w-5" /> 変更を保存して戻る
+                        <Save className="mr-2 h-5 w-5" /> 保存して戻る
                     </Button>
                 </header>
 
@@ -292,7 +292,7 @@ export default function QuizEditor() {
                     >
                         <div className="flex flex-col items-center gap-2 text-amber-200/50 group-hover:text-amber-400">
                             <Plus className="h-8 w-8" />
-                            <span className="font-black text-sm uppercase tracking-[0.2em]">新たな試練を追加する</span>
+                            <span className="font-black text-sm uppercase tracking-[0.2em]">あらたな問題を追加</span>
                         </div>
                     </Button>
                 </div>
@@ -302,14 +302,14 @@ export default function QuizEditor() {
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-slate-950/80 backdrop-blur-md border-t border-amber-900/30 z-20">
                 <div className="max-w-4xl mx-auto flex justify-between items-center">
                     <p className="text-amber-200/40 text-xs font-bold uppercase tracking-widest">
-                        合計 {questions.length} 個の試練
+                        合計 {questions.length} 問
                     </p>
                     <div className="flex gap-4">
                         <Button variant="ghost" onClick={() => router.push(`/host/${roomId}`)} className="text-white/50 hover:text-white">
                             破棄して戻る
                         </Button>
                         <Button onClick={handleSaveAll} className="fantasy-button px-10">
-                            魔導書を保存する
+                            クイズを保存する
                         </Button>
                     </div>
                 </div>

@@ -98,7 +98,7 @@ export default function HostDashboard() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
                             <Crown className="h-8 w-8 text-amber-500 animate-pulse" />
-                            <h1 className="text-4xl font-black gold-text italic tracking-tight">管理ギルド本部</h1>
+                            <h1 className="text-4xl font-black gold-text italic tracking-tight">クイズ管理者画面</h1>
                         </div>
                         <p className="text-amber-200/50 font-medium">ルームを管理し、冒険を導きましょう</p>
                     </div>
@@ -106,7 +106,7 @@ export default function HostDashboard() {
                     <div className="flex items-center gap-4">
                         <div className="bg-black/40 border border-amber-900/50 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md">
                             <div>
-                                <p className="rpg-label">召喚コード</p>
+                                <p className="rpg-label">参加コード</p>
                                 <p className="text-3xl font-black font-mono tracking-tighter text-amber-400">{roomId}</p>
                             </div>
                             <Button variant="ghost" size="icon" onClick={handleCopyInvite} className="hover:bg-amber-900/20 text-amber-400">
@@ -114,10 +114,22 @@ export default function HostDashboard() {
                             </Button>
                         </div>
                         <Button onClick={handleStartGame} size="lg" className="h-20 px-10 rounded-2xl bg-amber-600 hover:bg-amber-500 text-black font-black text-xl shadow-xl shadow-amber-900/20 group">
-                            冒険を開始する <Play className="ml-2 fill-current group-hover:scale-125 transition-transform" />
+                            クイズを開始する <Play className="ml-2 fill-current group-hover:scale-125 transition-transform" />
                         </Button>
                     </div>
                 </header>
+
+                {/* Primary Action: Create Questions */}
+                <Button
+                    onClick={() => router.push(`/host/${roomId}/edit`)}
+                    className="w-full text-2xl h-24 fantasy-button border-2 border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:scale-[1.01] transition-transform"
+                >
+                    <Settings className="mr-3 h-8 w-8" />
+                    <div className="flex flex-col items-start">
+                        <span className="font-black tracking-widest">新しいクイズを作成する（問題管理）</span>
+                        <span className="text-sm font-normal opacity-70">問題を作成しましょう</span>
+                    </div>
+                </Button>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-8">
@@ -135,32 +147,27 @@ export default function HostDashboard() {
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                                        <p className="rpg-label">マスター</p>
-                                        <p className="text-xl font-bold">{hostName || "伝説の賢者"}</p>
-                                    </div>
-                                    <div className="p-4 rounded-xl bg-black/30 border border-white/5">
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="p-4 rounded-xl bg-black/30 border border-white/5 flex justify-between items-center">
                                         <p className="rpg-label">現在のフェーズ</p>
-                                        <p className="text-xl font-bold">{roomStatus === "waiting" ? "冒険者募集中" : "試練遂行中"}</p>
+                                        <p className="text-xl font-bold">{roomStatus === "waiting" ? "参加待機中" : "クイズ進行中"}</p>
                                     </div>
                                 </div>
-                                <Button onClick={() => router.push(`/host/${roomId}/edit`)} variant="outline" className="w-full h-14 border-amber-900/50 hover:bg-amber-900/20 text-amber-200">
-                                    <Settings className="mr-2 h-5 w-5" /> 試練の内容を編集する (問題管理)
-                                </Button>
                             </CardContent>
                         </Card>
 
                         {/* Players Section */}
                         <div className="space-y-4">
-                            <h2 className="text-2xl font-black italic gold-text flex items-center gap-3">
-                                <Users className="h-7 w-7" />
-                                参加中の冒険者 ({players.length})
-                            </h2>
+                            <div className="flex justify-between items-end">
+                                <h2 className="text-2xl font-black italic gold-text flex items-center gap-3">
+                                    <Users className="h-7 w-7" />
+                                    参加者一覧 ({players.length})
+                                </h2>
+                            </div>
                             {players.length === 0 ? (
                                 <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-amber-900/30 rounded-3xl bg-black/10">
                                     <Users className="h-16 w-16 text-amber-900/30 mb-4" />
-                                    <p className="text-amber-200/30 font-bold">扉は開かれています。冒険者の到来を待ちましょう...</p>
+                                    <p className="text-amber-200/30 font-bold">参加者の到来を待ちましょう...</p>
                                     <Button variant="link" onClick={handleCopyInvite} className="text-amber-500 font-bold mt-2">招待リンクを共有</Button>
                                 </div>
                             ) : (
@@ -176,11 +183,9 @@ export default function HostDashboard() {
                                             >
                                                 <div className="relative">
                                                     <img src={player.iconUrl} className="w-12 h-12 rounded-full border-2 border-amber-500/50" alt="" />
-                                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black" />
                                                 </div>
                                                 <div className="truncate">
                                                     <p className="font-black text-amber-100 group-hover:text-white transition-colors capitalize">{player.name}</p>
-                                                    <p className="text-[10px] text-amber-500/50 font-bold tracking-widest uppercase">Lv.1 Adventurer</p>
                                                 </div>
                                             </motion.div>
                                         ))}
@@ -194,18 +199,13 @@ export default function HostDashboard() {
                         <Card className="fantasy-card border-none h-full">
                             <CardHeader>
                                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                    魔法のスクロール
+                                    クイズ管理者の心得
                                 </CardTitle>
-                                <CardDescription>ギルドマスターの心得</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4 text-sm text-amber-100/60 leading-relaxed italic">
-                                <p>1. クイズの内容はいつでも「試練の内容を編集」から変更可能です。</p>
-                                <p>2. 各問題には制限時間と配点が設定できます。難しい問題ほど多くの戦利品（ポイント）が得られるようにしましょう。</p>
-                                <p>3. 全員の準備ができたら「冒険を開始する」を押してください。</p>
-                                <div className="pt-4 mt-4 border-t border-white/10">
-                                    <p className="font-bold text-amber-400 mb-2 underline tracking-widest uppercase text-xs">Guild Secret</p>
-                                    <p>解答スピードが速いほど、追加のボーナスが得られます。反射神経こそが勝利の鍵です。</p>
-                                </div>
+                                <p>1. クイズの内容はいつでも「新しいクイズを作成する」から変更可能です。</p>
+                                <p>2. 各問題には制限時間と配点が設定できます。難易度に応じて調整しましょう。</p>
+                                <p>3. 全員の準備ができたら「クイズを開始する」を押してください。</p>
                             </CardContent>
                         </Card>
                     </div>

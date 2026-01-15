@@ -133,11 +133,11 @@ export default function HostPlay() {
                         <div className="flex items-center gap-3">
                             <Swords className="h-6 w-6 text-amber-500" />
                             <h1 className="text-2xl font-black italic gold-text tracking-widest uppercase">
-                                第 {room.currentQuestionIndex + 1} の試練 / 全 {questions.length} 問
+                                第 {room.currentQuestionIndex + 1} 問 / 全 {questions.length} 問
                             </h1>
                         </div>
                         <p className="text-amber-200/40 text-sm font-bold tracking-widest uppercase">
-                            フェーズ: {room.currentPhase === "question" ? "試練執行中" : room.currentPhase === "result" ? "結果開示" : "順位発表"}
+                            フェーズ: {room.currentPhase === "question" ? "出題中" : room.currentPhase === "result" ? "結果発表" : "ランキング発表"}
                         </p>
                     </div>
                     <div className="flex gap-4 items-center">
@@ -163,7 +163,7 @@ export default function HostPlay() {
                                     animate={{ opacity: 1, x: 0 }}
                                 >
                                     <Button size="lg" onClick={handleNextPhase} className="fantasy-button h-16 px-10 text-xl group">
-                                        {room.currentPhase === "leaderboard" && room.currentQuestionIndex === questions.length - 1 ? "冒険を完遂する" : "次の段階へ"} <ChevronRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                                        {room.currentPhase === "leaderboard" && room.currentQuestionIndex === questions.length - 1 ? "クイズを終了する" : "次へ"} <ChevronRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </motion.div>
                             )}
@@ -228,7 +228,7 @@ export default function HostPlay() {
                                             <Users className="h-8 w-8 text-amber-500" />
                                         </div>
                                         <div>
-                                            <p className="rpg-label !mb-0 text-sm">解答済み冒険者</p>
+                                            <p className="rpg-label !mb-0 text-sm">解答済み参加者</p>
                                             <p className="text-4xl font-black gold-text font-mono">{answeredCount} / {players.length}</p>
                                         </div>
                                     </div>
@@ -250,7 +250,7 @@ export default function HostPlay() {
                             <CardHeader className="border-b border-white/5 pb-4">
                                 <CardTitle className="text-xl font-black italic gold-text flex items-center gap-3 uppercase tracking-widest">
                                     <Trophy className="h-6 w-6 text-amber-500" />
-                                    現時点の序列
+                                    現在のランキング
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 overflow-y-auto">
