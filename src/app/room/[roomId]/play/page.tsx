@@ -23,6 +23,8 @@ export default function GuestPlay() {
     const [showFeedback, setShowFeedback] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
     const [pointsEarned, setPointsEarned] = useState(0);
+    const [basePointsEarned, setBasePointsEarned] = useState(0);
+    const [speedBonusEarned, setSpeedBonusEarned] = useState(0);
     const router = useRouter();
     const feedbackTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -115,13 +117,19 @@ export default function GuestPlay() {
         setSelectedAnswer(index);
 
         let points = 0;
+        let basePt = 0;
+        let bonusPt = 0;
         if (correct) {
-            const speedBonus = Math.max(0, 1 - (timeTaken / currentQuestion.timeLimit)) * 0.5;
-            points = Math.round(currentQuestion.points * (1 + speedBonus));
+            basePt = currentQuestion.points;
+            const speedFactor = Math.max(0, 1 - (timeTaken / currentQuestion.timeLimit)) * 0.5;
+            bonusPt = Math.round(basePt * speedFactor);
+            points = basePt + bonusPt;
         }
 
         setIsCorrect(correct);
         setPointsEarned(points);
+        setBasePointsEarned(basePt);
+        setSpeedBonusEarned(bonusPt);
         setShowFeedback(true);
 
         const playerRef = doc(db, "rooms", roomId, "players", user!.uid);
@@ -250,8 +258,12 @@ export default function GuestPlay() {
                             {isCorrect ? (
                                 <>
                                     <Swords className="h-20 w-20 text-green-400 mb-2" />
-                                    <p className="text-4xl font-black text-green-400 italic gold-text">EXCELLENT!!</p>
-                                    <p className="text-xl font-black text-white mt-2">+{pointsEarned} PT</p>
+                                    <p className="text-4xl font-black text-green-400 italic gold-text flex items-baseline gap-2">
+                                        {pointsEarned}<span className="text-xl">PT</span>
+                                    </p>
+                                    <p className="text-xs font-bold text-white/70 mt-1">
+                                        基本点 {basePointsEarned} + スピードボーナス {speedBonusEarned}
+                                    </p>
                                 </>
                             ) : (
                                 <>

@@ -199,7 +199,8 @@ export default function GuestLobby() {
                             </p>
                         </div>
                         <p className="text-amber-200/70 text-sm leading-relaxed max-w-md mx-auto italic">
-                            間もなくクイズが開始されます。そのままお待ちください。
+                            間もなくクイズが開始されます。そのままお待ちください。<br />
+                            <span className="text-amber-500 font-bold">※早く答えるほど最大で基本点の50％のスピードボーナスがもらえます！</span>
                         </p>
                     </div>
 
