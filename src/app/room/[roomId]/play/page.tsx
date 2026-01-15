@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot, updateDoc, increment, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, increment, getDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Progress } from "@/components/ui/progress";
