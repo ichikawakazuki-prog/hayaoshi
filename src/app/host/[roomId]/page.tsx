@@ -190,7 +190,7 @@ export default function HostDashboard() {
                             {players.length === 0 ? (
                                 <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-amber-900/30 rounded-3xl bg-black/10">
                                     <Users className="h-16 w-16 text-amber-900/30 mb-4" />
-                                    <p className="text-amber-200/30 font-bold">参加者の到来を待ちましょう...</p>
+                                    <p className="text-amber-200/30 font-bold">参加者を待っています...</p>
                                     <Button variant="link" onClick={handleCopyInvite} className="text-amber-500 font-bold mt-2">招待リンクを共有</Button>
                                 </div>
                             ) : (
