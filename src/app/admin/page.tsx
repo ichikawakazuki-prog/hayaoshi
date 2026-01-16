@@ -16,11 +16,6 @@ export default function AdminPage() {
     const isAnonymous = user?.isAnonymous;
     const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
 
-    useEffect(() => {
-        if (isAuthorized) {
-            router.push("/admin/questions");
-        }
-    }, [isAuthorized, router]);
 
     if (loading) {
         return (

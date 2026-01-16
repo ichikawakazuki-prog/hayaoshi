@@ -244,8 +244,8 @@ export default function QuestionsAdmin() {
 
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Form Section */}
-                <div className="lg:col-span-5">
-                    <Card className="fantasy-card border-none bg-black/60 sticky top-8">
+                <div className="lg:col-span-5 space-y-8">
+                    <Card className="fantasy-card border-none bg-black/60 pt-6">
                         <CardHeader>
                             <CardTitle className="text-xl font-bold gold-text">
                                 {editingId ? "問題を編集する" : "新規問題を追加する"}
@@ -330,7 +330,7 @@ export default function QuestionsAdmin() {
                     </Card>
 
                     {/* CSV Upload Section */}
-                    <Card className="fantasy-card border-none bg-black/60 mt-8 p-6 space-y-4">
+                    <Card className="fantasy-card border-none bg-black/60 p-6 space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-bold gold-text flex items-center gap-2">
                                 <FileUp className="h-4 w-4" /> CSV一括登録
