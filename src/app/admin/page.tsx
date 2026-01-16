@@ -10,7 +10,7 @@ import { useEffect } from "react";
 const WHITELIST = ["ichikawa.kazuki@shibaurafzk.com"];
 
 export default function AdminPage() {
-    const { user, loading, loginWithGoogle } = useAuth();
+    const { user, loading, loginWithGoogle, logout } = useAuth();
     const router = useRouter();
 
     const isAnonymous = user?.isAnonymous;
@@ -83,9 +83,38 @@ export default function AdminPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            <Loader2 className="h-8 w-8 animate-spin text-amber-500 mx-auto" />
-                            <p className="text-sm text-amber-400">管理画面へ移動中...</p>
+                        <div className="grid grid-cols-1 gap-4 py-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => router.push("/admin/questions")}
+                                className="h-20 border-white/10 hover:border-amber-500/50 flex flex-col items-center justify-center gap-1 group transition-all"
+                            >
+                                <div className="flex items-center gap-2 group-hover:gold-text">
+                                    <ChevronRight className="h-4 w-4" />
+                                    <span className="font-black italic uppercase tracking-wider">Question Manager</span>
+                                </div>
+                                <span className="text-[10px] text-white/20">問題の閲覧・追加・編集・CSV一括登録</span>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => router.push("/admin/ranking")}
+                                className="h-20 border-white/10 hover:border-amber-500/50 flex flex-col items-center justify-center gap-1 group transition-all"
+                            >
+                                <div className="flex items-center gap-2 group-hover:gold-text">
+                                    <ChevronRight className="h-4 w-4" />
+                                    <span className="font-black italic uppercase tracking-wider">Ranking Moderator</span>
+                                </div>
+                                <span className="text-[10px] text-white/20">ランキングの不正チェックとデータ削除</span>
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                onClick={logout}
+                                className="mt-4 text-white/20 hover:text-red-400"
+                            >
+                                Sign Out
+                            </Button>
                         </div>
                     )}
                 </Card>

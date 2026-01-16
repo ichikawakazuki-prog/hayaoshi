@@ -26,7 +26,9 @@ import {
     X,
     Loader2,
     Database,
-    Search
+    Search,
+    FileUp,
+    Download
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +52,7 @@ export default function QuestionsAdmin() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isBatchUploading, setIsBatchUploading] = useState(false);
 
     // Form state
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -143,6 +146,72 @@ export default function QuestionsAdmin() {
             category: "一般常識",
             difficulty: 1
         });
+    };
+
+    const handleCsvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const text = event.target?.result as string;
+            if (!text) return;
+
+            setIsBatchUploading(true);
+            try {
+                const lines = text.split('\n').filter(line => line.trim());
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const line of lines) {
+                    // Simple CSV Parse (Careful with commas in content, but for this app simple is fine)
+                    const parts = line.split(',').map(p => p.trim());
+                    if (parts.length >= 8) {
+                        const question = {
+                            text: parts[0],
+                            options: [parts[1], parts[2], parts[3], parts[4]],
+                            correctIndex: parseInt(parts[5]),
+                            category: parts[6],
+                            difficulty: parseInt(parts[7])
+                        };
+
+                        if (!isNaN(question.correctIndex) && !isNaN(question.difficulty)) {
+                            await addDoc(collection(db, "questions"), question);
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } else {
+                        errorCount++;
+                    }
+                }
+
+                toast({
+                    title: "一括登録完了",
+                    description: `${successCount}件の登録に成功しました。${errorCount > 0 ? `${errorCount}件のエラーが発生しました。` : ''}`
+                });
+                fetchQuestions();
+            } catch (error: any) {
+                toast({ title: "一括登録エラー", description: error.message, variant: "destructive" });
+            } finally {
+                setIsBatchUploading(false);
+                if (e.target) e.target.value = '';
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    const downloadTemplate = () => {
+        const headers = "問題文,選択肢1,選択肢2,選択肢3,選択肢4,正解番号(0-3),カテゴリー,難易度(1-5)\n";
+        const sample = "日本の首都は？,東京,大阪,京都,福岡,0,一般常識,1";
+        const blob = new Blob([headers + sample], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "question_template.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleLogout = async () => {
@@ -258,6 +327,45 @@ export default function QuestionsAdmin() {
                                 </div>
                             </form>
                         </CardContent>
+                    </Card>
+
+                    {/* CSV Upload Section */}
+                    <Card className="fantasy-card border-none bg-black/60 mt-8 p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold gold-text flex items-center gap-2">
+                                <FileUp className="h-4 w-4" /> CSV一括登録
+                            </h3>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={downloadTemplate}
+                                className="text-[10px] text-white/40 hover:text-amber-500 h-7"
+                            >
+                                <Download className="h-3 w-3 mr-1" /> テンプレート
+                            </Button>
+                        </div>
+                        <div className="relative">
+                            <input
+                                type="file"
+                                accept=".csv"
+                                onChange={handleCsvUpload}
+                                disabled={isBatchUploading}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:border-amber-500/30 transition-colors">
+                                {isBatchUploading ? (
+                                    <div className="flex flex-col items-center gap-2">
+                                        <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+                                        <p className="text-xs text-amber-200">登録中...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <p className="text-sm font-medium text-white/60">CSVファイルをドラッグ＆ドロップ</p>
+                                        <p className="text-[10px] text-white/20 mt-1">または、ここをクリックしてファイルを選択</p>
+                                    </>
+                                )}
+                            </div>
+                        </div>
                     </Card>
                 </div>
 
