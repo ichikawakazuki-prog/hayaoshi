@@ -61,17 +61,36 @@ export default function RankingAdmin() {
     const fetchRankings = async () => {
         setIsLoading(true);
         try {
-            const q = query(
+            // Try primary query with two orders (Requires Composite Index)
+            const qPrimary = query(
                 collection(db, "leaderboard"),
                 orderBy("score", "desc"),
                 orderBy("totalTime", "asc"),
                 limit(100)
             );
-            const snap = await getDocs(q);
+            const snap = await getDocs(qPrimary);
             const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as RankingEntry));
             setRankings(list);
         } catch (error: any) {
-            toast({ title: "取得エラー", description: error.message, variant: "destructive" });
+            console.error("Primary ranking fetch failed, trying fallback:", error);
+
+            // Fallback to single order if the index doesn't exist yet
+            try {
+                const qFallback = query(
+                    collection(db, "leaderboard"),
+                    orderBy("score", "desc"),
+                    limit(100)
+                );
+                const snap = await getDocs(qFallback);
+                const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as RankingEntry));
+                setRankings(list);
+
+                if (error.message?.includes("index")) {
+                    console.warn("Composite index missing in Admin. Using simpler ranking.");
+                }
+            } catch (fallbackError: any) {
+                toast({ title: "取得エラー", description: fallbackError.message, variant: "destructive" });
+            }
         } finally {
             setIsLoading(false);
         }
