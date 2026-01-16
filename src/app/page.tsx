@@ -251,7 +251,7 @@ export default function Home() {
                   </motion.div>
 
                   <div className="pt-2 px-1">
-                    <p className="text-amber-400 font-black text-[10px] uppercase tracking-widest animate-pulse">
+                    <p className="text-amber-400 font-black text-sm uppercase tracking-widest animate-pulse">
                       ルームに参加するにはコードを入力
                     </p>
                   </div>
@@ -277,12 +277,6 @@ export default function Home() {
                   <AdBanner adSlot="home_bottom" />
                 </div>
               </CardContent>
-
-              <CardFooter className="justify-center border-t border-white/5 pt-6 pb-4">
-                <p className="text-white/20 text-[10px] uppercase tracking-[0.5em] font-black">
-                  © 2026 sparks-station.com
-                </p>
-              </CardFooter>
             </Card>
           </motion.div>
 
