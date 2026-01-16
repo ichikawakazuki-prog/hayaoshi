@@ -26,12 +26,12 @@ export default function Footer() {
                     <Link href="/terms" className="hover:text-amber-500 transition-colors">
                         利用規約
                     </Link>
-                    <a
-                        href="mailto:contact@sparks-station.com"
+                    <Link
+                        href="/contact"
                         className="hover:text-amber-500 transition-colors"
                     >
                         お問い合わせ
-                    </a>
+                    </Link>
                 </nav>
 
                 <div className="text-white/20 text-[10px] font-black tracking-[0.4em] uppercase">
