@@ -13,7 +13,8 @@ export default function AdminPage() {
     const { user, loading, loginWithGoogle } = useAuth();
     const router = useRouter();
 
-    const isAuthorized = user && user.email && WHITELIST.includes(user.email);
+    const isAnonymous = user?.isAnonymous;
+    const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
 
     useEffect(() => {
         if (isAuthorized) {
@@ -43,11 +44,10 @@ export default function AdminPage() {
                 </div>
 
                 <Card className="fantasy-card border-none bg-black/60 p-8 text-center space-y-6">
-                    {!user ? (
+                    {!user || isAnonymous ? (
                         <>
                             <p className="text-sm text-amber-100/60 leading-relaxed">
-                                管理機能を使用するには、認証が必要です。<br />
-                                ホワイトリストに登録されたGoogleアカウントでログインしてください。
+                                管理機能を使用するには、管理用のGoogleアカウントで認証が必要です。
                             </p>
                             <Button
                                 onClick={loginWithGoogle}
@@ -64,15 +64,23 @@ export default function AdminPage() {
                             </p>
                             <p className="text-xs text-white/40">
                                 アカウント: {user.email}<br />
-                                このアカウントはホワイトリストに含まれていません。
+                                このアカウントは許可リストに含まれていません。
                             </p>
-                            <Button
-                                variant="outline"
-                                onClick={() => window.location.href = "/"}
-                                className="w-full border-white/10 text-white/40"
-                            >
-                                ホームに戻る
-                            </Button>
+                            <div className="flex flex-col gap-2">
+                                <Button
+                                    onClick={loginWithGoogle}
+                                    className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold"
+                                >
+                                    別のアカウントでログイン
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => window.location.href = "/"}
+                                    className="w-full border-white/10 text-white/40"
+                                >
+                                    ホームに戻る
+                                </Button>
+                            </div>
                         </div>
                     ) : (
                         <div className="space-y-4">

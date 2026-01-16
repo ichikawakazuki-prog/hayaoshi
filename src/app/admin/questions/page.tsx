@@ -61,15 +61,16 @@ export default function QuestionsAdmin() {
         difficulty: 1
     });
 
-    const isAuthorized = user && user.email && WHITELIST.includes(user.email);
+    const isAnonymous = user?.isAnonymous;
+    const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
 
     useEffect(() => {
-        if (!loading && !isAuthorized) {
+        if (!loading && (!isAuthorized || isAnonymous)) {
             router.push("/admin");
         } else if (isAuthorized) {
             fetchQuestions();
         }
-    }, [user, loading, isAuthorized, router]);
+    }, [user, loading, isAuthorized, isAnonymous, router]);
 
     const fetchQuestions = async () => {
         setIsLoading(true);
