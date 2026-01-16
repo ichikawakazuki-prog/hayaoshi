@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { generateRoomId } from "@/lib/utils-game";
-import { Plus, Sparkles, Sword, Crown, Users } from "lucide-react";
+import { Plus, Sparkles, Sword, Crown, Users, Scroll } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import AdBanner from "@/components/AdBanner";
@@ -34,39 +34,11 @@ export default function Home() {
     try {
       if (!user) {
         await loginAnonymously();
-        // Wait a bit for user state to update? 
-        // Actually loginAnonymously in context updates state. 
-        // But we might need to handle the case where user is not yet set in this render cycle if we don't await properly or if context updates asynchronously.
-        // However, firebase auth is async. Let's assume after await, `auth.currentUser` is available even if context `user` isn't immediately.
-        // Better: use auth.currentUser directly or rely on the fact that we'll be redirected if we push.
-        // But we need uid for creation.
-      }
-
-      // We can't easily get the user object *immediately* from context after login if it uses a listener.
-      // It's safer to let the user click again or handle the "loading" state until user is present.
-      // But for better UX, let's just wait a slight bit or check auth.currentUser.
-      // Given the constraints, let's just trigger login if !user and assume consistency for next click or chained.
-      // Actually, if I await loginAnonymously, the context state might update.
-      // Let's rely on the auth instance directly for the ID if needed, but context is better.
-      // For simplicity: If !user, login, return (UI will update). User clicks again? No that's bad.
-      // Let's assume loginAnonymously waits for listener? NO, it just waits for signIn. 
-      // The listener fires separately.
-      // Proper way: wrapper that handles "Login & Action".
-
-      let currentUser = user;
-      if (!currentUser) {
-        await loginAnonymously();
-        // We can't get the user object here easily without direct auth import or return from login function.
-        // Let's modify logic to just require user to be logged in effectively.
-        // But I'll try to fetch it from the auth instance if needed.
-        // For now, let's keep it simple: If not logged in, log in. 
-        // Then in a useEffect or similar, if we were "trying to create", proceed.
-        // OR: Just grab `auth.currentUser` from firebase import.
       }
 
       // Re-check auth (using imported auth to be sure)
       const { auth } = require("@/lib/firebase");
-      currentUser = auth.currentUser;
+      let currentUser = auth.currentUser;
 
       if (!currentUser) {
         throw new Error("ログインに失敗しました。認証設定を確認してください。");
@@ -87,7 +59,7 @@ export default function Home() {
         currentQuestionIndex: -1,
         currentPhase: "waiting",
         hostId: currentUser.uid,
-        hostName: "管理者", // Anonymous users don't have display names usually
+        hostName: "管理者",
         createdAt: Date.now(),
         shortId: newId
       });
@@ -155,6 +127,7 @@ export default function Home() {
           key="main"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="min-h-screen relative flex flex-col items-center justify-center p-4 overflow-x-hidden"
         >
@@ -280,7 +253,6 @@ export default function Home() {
             </Card>
           </motion.div>
 
-          {/* Added Content Sections for AdSense Compliance */}
           <div className="w-full max-w-4xl z-10 mt-20 space-y-12 mb-20">
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <motion.div
@@ -344,7 +316,7 @@ export default function Home() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 className="fantasy-card bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/5 space-y-4"
@@ -367,6 +339,32 @@ export default function Home() {
                     <p className="text-amber-100/60 text-sm">ファンタジーな世界観をイメージしたUIで、没入感のあるクイズ体験を提供します。</p>
                   </div>
                 </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="fantasy-card bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/5 space-y-4"
+              >
+                <h2 className="text-2xl font-black gold-text italic flex items-center gap-3">
+                  <Scroll className="h-6 w-6 text-amber-500" />
+                  栄光への挑戦
+                </h2>
+                <ul className="space-y-4 text-amber-100/80 font-medium leading-relaxed">
+                  <li className="flex gap-3">
+                    <span className="text-amber-500 font-bold">・</span>
+                    <span>登録不要。ブラウザから今すぐ冒険を開始。</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-amber-500 font-bold">・</span>
+                    <span>全国の騎士たちとランキングで覇を競う。</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-amber-500 font-bold">・</span>
+                    <span>PC・スマホ、全デバイスで快適に動作。</span>
+                  </li>
+                </ul>
               </motion.div>
             </section>
 
