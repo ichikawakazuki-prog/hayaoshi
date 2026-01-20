@@ -79,14 +79,16 @@ export default async function PostPage({ params }: Props) {
             </header>
 
             {/* Content using standard Prose styles but customized for dark mode */}
+            {/* Content using standard Prose styles but customized for dark mode */}
             <div className="prose prose-invert prose-emerald max-w-none 
-                prose-headings:font-bold prose-headings:tracking-tight
-                prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:scroll-m-20 prose-h2:border-b prose-h2:border-neutral-800 prose-h2:pb-2
-                prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
-                prose-p:text-neutral-300 prose-p:leading-relaxed prose-p:text-lg
-                prose-li:text-neutral-300
+                prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neutral-100
+                prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:pb-4 prose-h2:border-b prose-h2:border-neutral-800
+                prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:text-emerald-400
+                prose-p:text-neutral-300 prose-p:leading-8 prose-p:text-lg prose-p:mb-8
+                prose-li:text-neutral-300 prose-li:leading-7 prose-li:my-2
+                prose-ul:my-8 prose-ul:list-disc prose-ul:pl-6
                 prose-strong:text-white prose-strong:font-bold
-                prose-code:text-emerald-300 prose-code:bg-emerald-950/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+                prose-code:text-emerald-300 prose-code:bg-emerald-950/40 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
                 ">
                 <ReactMarkdown>{post.content}</ReactMarkdown>
             </div>
