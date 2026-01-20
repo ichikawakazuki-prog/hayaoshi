@@ -41,7 +41,10 @@ export function getSortedPostsData(): Post[] {
         return {
             slug,
             content,
-            metadata: data as PostMetadata,
+            metadata: {
+                ...data,
+                tags: data.tags || [],
+            } as PostMetadata,
         };
     });
 
@@ -71,7 +74,10 @@ export async function getPostData(slug: string): Promise<Post> {
     return {
         slug,
         content,
-        metadata: data as PostMetadata,
+        metadata: {
+            ...data,
+            tags: data.tags || [],
+        } as PostMetadata,
     };
 }
 
