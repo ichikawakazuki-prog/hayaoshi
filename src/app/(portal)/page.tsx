@@ -13,11 +13,12 @@ export default function PortalPage() {
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white max-w-3xl mx-auto leading-tight">
                     海外の開発・売却事例から<br className="hidden md:block" />
-                    <span className="text-emerald-400">「Spark（ひらめき）」</span>をエンジニアへ。
+                    <span className="text-emerald-400">「Sparks（種火）」</span>を。
                 </h1>
                 <p className="text-neutral-400 max-w-xl mx-auto text-lg leading-relaxed">
-                    次のプロダクトの種火（Spark）は、海の向こうにある。
-                    <br />数十億円で売却されたSaaSの「なぜ」と「どうやって」を、エンジニアの視点で紐解きます。
+                    次のプロダクトの種火は、海の向こうに。
+                    <br />高額で売却されたSaaSの
+                    <br />「なぜ」と「どうやって」を紐解く。
                 </p>
             </section>
 
