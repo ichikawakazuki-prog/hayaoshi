@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getThemeForTag } from '@/lib/theme';
+import FeedbackSection from '../../components/FeedbackSection';
 
 type Props = {
     params: Promise<{ slug: string }>;
@@ -98,6 +99,9 @@ export default async function PostPage({ params }: Props) {
                 `}>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
             </div>
+
+            {/* Feedback & Comments */}
+            <FeedbackSection slug={post.slug} />
 
             {/* Footer / Navigation */}
             <div className="pt-12 border-t border-neutral-800 mt-16 flex justify-center">

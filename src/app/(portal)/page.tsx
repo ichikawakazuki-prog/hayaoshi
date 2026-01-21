@@ -1,8 +1,22 @@
 import { getSortedPostsData } from '@/lib/content';
 import PostCard from './components/PostCard';
+import Pagination from './components/Pagination';
 
-export default function PortalPage() {
+const POSTS_PER_PAGE = 6;
+
+export default async function PortalPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     const posts = getSortedPostsData();
+    const params = await searchParams;
+    const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
+    const currentPage = isNaN(page) || page < 1 ? 1 : page;
+
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const displayedPosts = posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
     return (
         <div className="space-y-16">
@@ -33,10 +47,12 @@ export default function PortalPage() {
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {posts.map((post) => (
+                    {displayedPosts.map((post) => (
                         <PostCard key={post.slug} post={post} />
                     ))}
                 </div>
+
+                <Pagination currentPage={currentPage} totalPages={totalPages} />
             </section>
         </div>
     );

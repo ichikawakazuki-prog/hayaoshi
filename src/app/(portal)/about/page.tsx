@@ -17,8 +17,8 @@ export default function AboutPage() {
                     知見と思想を、実装する。
                 </h1>
                 <p className="text-lg md:text-xl text-neutral-300 max-w-3xl mx-auto leading-relaxed">
-                    Sparks Stationは、世界の「開発事例」と「先進思想」をインストールし、<br className="hidden md:inline" />
-                    自らのプロダクトとして形にするための<br className="hidden md:inline" />
+                    Sparks Stationは、世界の「開発事例」と「先進思想」を蓄積し、<br className="hidden md:inline" />
+                    プロダクトとして形にしていくための<br className="hidden md:inline" />
                     <span className="text-white font-bold">「SaaS Analysis & Studio」</span>です。
                 </p>
             </section>
@@ -38,9 +38,9 @@ export default function AboutPage() {
                         「これからの時代、世界はどう変わるのか？（Advanced Thoughts）」
                     </p>
                     <p>
-                        この2つの問いは、プロダクト開発における車の両輪です。<br />
-                        海の向こうにある成功のロジックと、シンギュラリティを見据えた未来への視座。<br />
-                        私たちはこれらを収集・分析するだけでなく、実際の<span className="text-white font-bold">「開発（Build）」</span>を通じて、次世代のスタンダードとなるプロダクトを創出します。
+                        この2つの問いは、プロダクト開発における両輪です。<br />
+                        世界中の事例にみられる成功のロジックと、シンギュラリティを見据えた未来への視座。<br />
+                        私たちはこれらを収集・分析し、実際の<span className="text-white font-bold">「開発（Build）」</span>につなげていくことを目指します。
                     </p>
                 </div>
             </section>
@@ -86,8 +86,8 @@ export default function AboutPage() {
                         <div className="space-y-3">
                             <h3 className="text-xl font-bold text-white">Product Studio <span className="text-amber-400 text-sm font-normal ml-2">/ 創造</span></h3>
                             <p className="text-neutral-400 leading-relaxed">
-                                得られた知見と思想を「種火」として、実際に自社プロダクトを開発（Build）。<br />
-                                実験と実装のプロセスを公開し、理論を現実に変える場所。
+                                得られた知見と思想を「種火」としたプロダクト開発（Build）。<br />
+                                事例や概念を盛り込んだプロダクト開発の実践の場所。
                             </p>
                         </div>
                     </div>

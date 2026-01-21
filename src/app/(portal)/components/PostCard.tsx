@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Post } from '@/lib/content';
 import { getThemeForTag } from '@/lib/theme';
+import PostStats from './PostStats';
 
 export default function PostCard({ post }: { post: Post }) {
     const mainTag = post.metadata.tags[0] || 'Tech';
@@ -43,10 +44,9 @@ export default function PostCard({ post }: { post: Post }) {
                         {post.metadata.summary}
                     </p>
 
-                    <div className="pt-4 flex items-center justify-between text-xs font-mono border-t border-neutral-700/50 mt-5 w-full">
-                        <div className="text-neutral-500">MRR: <span className="text-neutral-300 font-bold">{post.metadata.mrr || 'N/A'}</span></div>
-                        <div className="text-neutral-500">Sold: <span className="text-neutral-300 font-bold">{post.metadata.exit_price || 'N/A'}</span></div>
-                    </div>
+
+                    {/* Stats Footer (Integrated into card) */}
+                    <PostStats slug={post.slug} theme={theme} />
                 </div>
             </article>
         </Link>
