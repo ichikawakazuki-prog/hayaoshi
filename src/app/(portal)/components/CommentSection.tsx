@@ -114,6 +114,9 @@ export default function CommentSection({ slug }: { slug: string }) {
                                     Logged in as: <span className="text-neutral-200 font-bold">{user.displayName || 'Anonymous'}</span>
                                     {user.email && <span className="text-neutral-500 text-xs ml-2">({user.email})</span>}
                                 </div>
+                                <div className="text-[10px] text-neutral-600 font-mono">
+                                    UID: {user.uid.slice(0, 8)}...
+                                </div>
                             </div>
                             <button
                                 onClick={() => auth.signOut()}
@@ -204,6 +207,9 @@ export default function CommentSection({ slug }: { slug: string }) {
                                         <span className="font-bold text-neutral-200 text-sm">{comment.userName}</span>
                                         <span className="text-xs text-neutral-500">
                                             {comment.createdAt?.toDate().toLocaleDateString('ja-JP')}
+                                        </span>
+                                        <span className="text-[10px] text-neutral-700 font-mono" title={comment.userId}>
+                                            (ID: {comment.userId.slice(0, 8)}...)
                                         </span>
                                     </div>
                                     {user && user.uid === comment.userId && (
