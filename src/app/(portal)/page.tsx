@@ -12,8 +12,9 @@ export default function PortalPage() {
                     Micro-SaaS Trends for Engineers
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white max-w-4xl mx-auto leading-tight">
-                    最新の「開発事例」と<br className="hidden md:block" />
-                    先進的な<span className="text-emerald-400">「思想」</span>を<span className="text-emerald-400">「プロダクト」</span>へ。
+                    最新の<span className="text-emerald-400">「開発事例」</span>と<br className="hidden md:block" />
+                    先進的な<span className="text-emerald-400">「思想」</span>を<br className="hidden md:block" />
+                    <span className="text-emerald-400">「プロダクト」</span>へ。
                 </h1>
                 <p className="text-neutral-400 max-w-2xl mx-auto text-lg leading-relaxed">
                     海の向こうの開発事例と、世界をアップデートする概念。<br />
