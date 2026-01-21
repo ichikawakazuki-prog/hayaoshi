@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot, collection, updateDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, updateDoc, getDocs, deleteDoc, writeBatch, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Settings, Play, ChevronRight, Copy, Share2, Crown, ScrollText, Home } from "lucide-react";
+import { Users, Settings, Play, ChevronRight, Copy, Share2, Crown, ScrollText, Home, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { STANDARD_QUESTIONS } from "@/lib/standard-questions";
 
 interface Player {
     id: string;
@@ -27,6 +28,8 @@ export default function HostDashboard() {
     const [roomStatus, setRoomStatus] = useState<string>("waiting");
     const [hostName, setHostName] = useState<string>("");
     const [roomName, setRoomName] = useState<string>("Fantasy Room");
+    const [roomType, setRoomType] = useState<string>("original");
+    const [hostParticipates, setHostParticipates] = useState<boolean>(false);
     const { toast } = useToast();
     const router = useRouter();
 
@@ -34,7 +37,7 @@ export default function HostDashboard() {
         if (authLoading || !user) return;
 
         const roomRef = doc(db, "rooms", roomId);
-        const unsubscribeRoom = onSnapshot(roomRef, (snapshot) => {
+        const unsubscribeRoom = onSnapshot(roomRef, async (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
                 if (data.hostId !== user.uid) {
@@ -44,6 +47,49 @@ export default function HostDashboard() {
                 setRoomStatus(data.status);
                 setHostName(data.hostName);
                 if (data.roomName) setRoomName(data.roomName);
+                if (data.type) setRoomType(data.type);
+                if (data.hostParticipates) setHostParticipates(data.hostParticipates);
+
+                // Initialize Standard Questions if needed
+                if (data.type === 'standard') {
+                    const questionsRef = collection(db, "rooms", roomId, "questions");
+                    const qSnap = await getDocs(questionsRef);
+                    if (qSnap.empty) {
+                        const batch = writeBatch(db);
+                        STANDARD_QUESTIONS.forEach((q, index) => {
+                            const newQRef = doc(questionsRef); // Auto ID
+                            batch.set(newQRef, {
+                                ...q,
+                                createdAt: Date.now() + index, // Ensure order
+                                order: index
+                            });
+                        });
+                        await batch.commit();
+                        console.log("Standard questions initialized");
+                    }
+                }
+
+                // Auto-join Host if participating
+                if (data.hostParticipates) {
+                    const hostPlayerRef = doc(db, "rooms", roomId, "players", user.uid);
+                    const hostPlayerSnap = await getDoc(hostPlayerRef);
+                    if (!hostPlayerSnap.exists()) {
+                        await setDoc(hostPlayerRef, {
+                            name: data.hostName || "管理者(プレイヤー)",
+                            iconUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`, // Consistent seed
+                            score: 0,
+                            totalTime: 0,
+                            joinedAt: Date.now(),
+                            answers: {},
+                            isHost: true // Mark as host player
+                        });
+                        toast({
+                            title: "プレイヤーとして参加しました",
+                            description: "管理者もクイズに参加します。",
+                        });
+                    }
+                }
+
             } else {
                 router.push("/");
             }
@@ -58,7 +104,7 @@ export default function HostDashboard() {
             unsubscribeRoom();
             unsubscribePlayers();
         };
-    }, [roomId, user, authLoading, router]);
+    }, [roomId, user, authLoading, router, toast]);
 
     const handleCopyInvite = () => {
         const url = `${window.location.origin}/room/${roomId}`;
@@ -142,17 +188,31 @@ export default function HostDashboard() {
                     </div>
                 </header>
 
-                {/* Primary Action: Create Questions */}
-                <Button
-                    onClick={() => router.push(`/host/${roomId}/edit`)}
-                    className="w-full text-2xl h-24 fantasy-button border-2 border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:scale-[1.01] transition-transform text-amber-100"
-                >
-                    <Settings className="mr-3 h-8 w-8" />
-                    <div className="flex flex-col items-start">
-                        <span className="font-black tracking-widest">新しいクイズを作成する（問題管理）</span>
-                        <span className="text-sm font-normal opacity-70">問題を作成しましょう</span>
-                    </div>
-                </Button>
+                {/* Question Management / Type Indicator */}
+                {roomType === 'standard' ? (
+                    <Card className="fantasy-card border-none bg-amber-900/20 border-amber-500/30">
+                        <CardContent className="flex items-center gap-4 p-6">
+                            <div className="p-3 rounded-full bg-amber-500/20">
+                                <ScrollText className="h-8 w-8 text-amber-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-amber-100">既存問題モード (Standard Mode)</h3>
+                                <p className="text-amber-200/60 text-sm">システムが用意した厳選問題が出題されます。問題の追加・編集はできません。</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Button
+                        onClick={() => router.push(`/host/${roomId}/edit`)}
+                        className="w-full text-2xl h-24 fantasy-button border-2 border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:scale-[1.01] transition-transform text-amber-100"
+                    >
+                        <Settings className="mr-3 h-8 w-8" />
+                        <div className="flex flex-col items-start">
+                            <span className="font-black tracking-widest">新しいクイズを作成する（問題管理）</span>
+                            <span className="text-sm font-normal opacity-70">問題を作成しましょう</span>
+                        </div>
+                    </Button>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-8">
@@ -175,6 +235,15 @@ export default function HostDashboard() {
                                         <p className="rpg-label">現在のフェーズ</p>
                                         <p className="text-xl font-bold">{roomStatus === "waiting" ? "参加待機中" : "クイズ進行中"}</p>
                                     </div>
+                                    {hostParticipates && (
+                                        <div className="p-4 rounded-xl bg-amber-900/20 border border-amber-500/30 flex items-center gap-3">
+                                            <Shield className="h-5 w-5 text-amber-400" />
+                                            <div>
+                                                <p className="text-sm font-bold text-amber-100">管理者参加モード</p>
+                                                <p className="text-xs text-amber-200/60">あなたもプレイヤーとして参加しています</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -202,10 +271,15 @@ export default function HostDashboard() {
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 exit={{ opacity: 0, scale: 0.8 }}
-                                                className="p-4 rounded-2xl bg-black/50 border border-amber-900/40 flex items-center gap-4 group hover:border-amber-500 transition-colors"
+                                                className={`p-4 rounded-2xl border flex items-center gap-4 group transition-colors ${player.id === user.uid
+                                                    ? "bg-amber-900/20 border-amber-500/50"
+                                                    : "bg-black/50 border-amber-900/40 hover:border-amber-500"}`}
                                             >
                                                 <div className="relative">
                                                     <img src={player.iconUrl} className="w-12 h-12 rounded-full border-2 border-amber-500/50" alt="" />
+                                                    {player.id === user.uid && (
+                                                        <div className="absolute -top-1 -right-1 bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">YOU</div>
+                                                    )}
                                                 </div>
                                                 <div className="truncate">
                                                     <p className="font-black text-amber-100 group-hover:text-white transition-colors capitalize">{player.name}</p>
@@ -229,6 +303,9 @@ export default function HostDashboard() {
                                 <p>1. クイズの内容はいつでも「新しいクイズを作成する」から変更可能です。</p>
                                 <p>2. 各問題には制限時間と配点が設定できます。難易度に応じて調整しましょう。</p>
                                 <p>3. 全員の準備ができたら「クイズを開始する」を押してください。</p>
+                                {hostParticipates && (
+                                    <p className="text-amber-300 font-bold">★ あなたもプレイヤーとして参加中です！出題画面で回答を選んでください。</p>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
@@ -237,7 +314,7 @@ export default function HostDashboard() {
                 <div className="relative z-10 flex justify-center pb-8 mt-12">
                     <Button
                         variant="ghost"
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push("/FantasyQuizzesKingdom")}
                         className="text-amber-500/60 hover:text-amber-400 hover:bg-amber-950/30 text-xs font-bold tracking-widest uppercase transition-colors"
                     >
                         <Home className="mr-2 h-4 w-4" /> ホームに戻る

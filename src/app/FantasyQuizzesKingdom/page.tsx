@@ -20,6 +20,7 @@ export default function Home() {
   const { user, loginAnonymously } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("TOP");
   const [roomId, setRoomId] = useState("");
+  const [hostParticipates, setHostParticipates] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const router = useRouter();
@@ -219,6 +220,22 @@ export default function Home() {
                     <div className="space-y-4">
                       <div className="text-center">
                         <h3 className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-4">ルーム作成 (Create Room)</h3>
+
+                        {/* Host Participation Toggle */}
+                        <div className="flex justify-center mb-4">
+                          <label className="flex items-center gap-2 cursor-pointer group bg-black/40 px-4 py-2 rounded-full border border-amber-900/30 hover:border-amber-500/50 transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={hostParticipates}
+                              onChange={(e) => setHostParticipates(e.target.checked)}
+                              className="accent-amber-500 w-4 h-4"
+                            />
+                            <span className={`text-sm font-bold ${hostParticipates ? "text-amber-400" : "text-amber-100/50 group-hover:text-amber-100"}`}>
+                              管理者もクイズに参加する
+                            </span>
+                          </label>
+                        </div>
+
                         <div className="grid grid-cols-1 gap-3">
                           <Button
                             onClick={() => handleCreateRoom('original')}
@@ -232,7 +249,7 @@ export default function Home() {
                             className="w-full h-14 bg-amber-900/50 hover:bg-amber-800/50 border border-amber-500/30 text-amber-100 font-bold opacity-80"
                           >
                             <Gamepad2 className="mr-2 h-4 w-4 text-amber-400" />
-                            既存問題で遊ぶ (Coming Soon)
+                            既存問題で遊ぶ
                           </Button>
                         </div>
                       </div>
@@ -274,6 +291,7 @@ export default function Home() {
                         <ArrowLeft className="mr-2 h-4 w-4" /> ホームに戻る
                       </Button>
                     </div>
+
                   </div>
                 )}
 
