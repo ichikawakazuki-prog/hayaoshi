@@ -20,14 +20,14 @@ export default function Footer() {
                     <Link href="/" className="hover:text-amber-500 transition-colors">
                         ホーム
                     </Link>
-                    <Link href="/quiz/privacy" className="hover:text-amber-500 transition-colors">
+                    <Link href="/FantasyQuizzesKingdom/privacy" className="hover:text-amber-500 transition-colors">
                         プライバシーポリシー
                     </Link>
-                    <Link href="/quiz/terms" className="hover:text-amber-500 transition-colors">
+                    <Link href="/FantasyQuizzesKingdom/terms" className="hover:text-amber-500 transition-colors">
                         利用規約
                     </Link>
                     <Link
-                        href="/quiz/contact"
+                        href="/FantasyQuizzesKingdom/contact"
                         className="hover:text-amber-500 transition-colors"
                     >
                         お問い合わせ

@@ -21,7 +21,7 @@ export default function ProductsPage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Product 1: Fantasy Quizzes Kingdom */}
-                <Link href="/quiz" className="group block relative bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1">
+                <Link href="/FantasyQuizzesKingdom" className="group block relative bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1">
                     <div className="aspect-video relative">
                         <Image
                             src="/key-visual.png"

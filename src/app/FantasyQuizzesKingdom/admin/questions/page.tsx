@@ -69,7 +69,7 @@ export default function QuestionsAdmin() {
 
     useEffect(() => {
         if (!loading && (!isAuthorized || isAnonymous)) {
-            router.push("/quiz/admin");
+            router.push("/FantasyQuizzesKingdom/admin");
         } else if (isAuthorized) {
             fetchQuestions();
         }
@@ -216,7 +216,7 @@ export default function QuestionsAdmin() {
 
     const handleLogout = async () => {
         await logout();
-        router.push("/quiz/admin");
+        router.push("/FantasyQuizzesKingdom/admin");
     };
 
     if (loading || !isAuthorized) {

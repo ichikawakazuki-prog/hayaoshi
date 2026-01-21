@@ -35,13 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ...postUrls,
         // Quiz App URLs
         {
-            url: `${baseUrl}/quiz`,
+            url: `${baseUrl}/FantasyQuizzesKingdom`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/quiz/solo`,
+            url: `${baseUrl}/FantasyQuizzesKingdom/solo`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,

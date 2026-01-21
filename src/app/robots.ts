@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/quiz/admin', '/quiz/room/', '/quiz/host/'],
+            disallow: ['/FantasyQuizzesKingdom/admin', '/FantasyQuizzesKingdom/room/', '/FantasyQuizzesKingdom/host/'],
         },
         sitemap: `${baseUrl}/sitemap.xml`,
     }
