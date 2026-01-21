@@ -115,7 +115,20 @@ export default function SoloPage() {
             if (!user) await loginAnonymously();
 
             const snap = await getDocs(collection(db, "questions"));
-            const allQuestions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Question));
+            const allQuestions = snap.docs
+                .map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        text: data.text || "問題文なし",
+                        // Handle both 'options' and 'choices' field names
+                        options: data.options || data.choices || [],
+                        // Handle both 'correctIndex' and 'correctAnswer' field names
+                        correctIndex: data.correctIndex ?? data.correctAnswer ?? 0
+                    } as Question;
+                })
+                .filter(q => q.options.length >= 2 && q.text); // valid questions only
+
             const shuffled = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 10);
 
             if (shuffled.length < 1) {

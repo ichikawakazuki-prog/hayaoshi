@@ -71,15 +71,21 @@ export default function HostDashboard() {
                                 const batch = writeBatch(db);
                                 selected.forEach((q, index) => {
                                     const newQRef = doc(questionsRef);
-                                    batch.set(newQRef, {
-                                        text: q.text,
-                                        choices: q.options || [], // Map options to choices
-                                        correctAnswer: q.correctIndex !== undefined ? q.correctIndex : 0,
-                                        timeLimit: 20,
-                                        points: 1000,
-                                        createdAt: Date.now() + index,
-                                        order: index
-                                    });
+                                    // Robust mapping
+                                    const choices = q.options || q.choices || [];
+                                    const correctIndex = q.correctIndex ?? q.correctAnswer ?? 0;
+
+                                    if (choices.length > 0) {
+                                        batch.set(newQRef, {
+                                            text: q.text || "No Question Text",
+                                            choices: choices,
+                                            correctAnswer: correctIndex,
+                                            timeLimit: q.timeLimit || 20,
+                                            points: q.points || 1000,
+                                            createdAt: Date.now() + index,
+                                            order: index
+                                        });
+                                    }
                                 });
                                 await batch.commit();
                                 console.log("Standard questions initialized from global DB");
