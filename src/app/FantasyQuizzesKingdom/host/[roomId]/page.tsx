@@ -12,7 +12,6 @@ import { Users, Settings, Play, ChevronRight, Copy, Share2, Crown, ScrollText, H
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { STANDARD_QUESTIONS } from "@/lib/standard-questions";
 
 interface Player {
     id: string;
@@ -54,18 +53,42 @@ export default function HostDashboard() {
                 if (data.type === 'standard') {
                     const questionsRef = collection(db, "rooms", roomId, "questions");
                     const qSnap = await getDocs(questionsRef);
+
                     if (qSnap.empty) {
-                        const batch = writeBatch(db);
-                        STANDARD_QUESTIONS.forEach((q, index) => {
-                            const newQRef = doc(questionsRef); // Auto ID
-                            batch.set(newQRef, {
-                                ...q,
-                                createdAt: Date.now() + index, // Ensure order
-                                order: index
-                            });
-                        });
-                        await batch.commit();
-                        console.log("Standard questions initialized");
+                        try {
+                            // Fetch questions from global 'questions' collection
+                            const globalQRef = collection(db, "questions");
+                            const globalSnap = await getDocs(globalQRef);
+
+                            if (!globalSnap.empty) {
+                                let allQuestions = globalSnap.docs.map(d => d.data());
+
+                                // Shuffle and pick up to 10
+                                const selected = allQuestions
+                                    .sort(() => 0.5 - Math.random())
+                                    .slice(0, 10);
+
+                                const batch = writeBatch(db);
+                                selected.forEach((q, index) => {
+                                    const newQRef = doc(questionsRef);
+                                    batch.set(newQRef, {
+                                        text: q.text,
+                                        choices: q.options || [], // Map options to choices
+                                        correctAnswer: q.correctIndex !== undefined ? q.correctIndex : 0,
+                                        timeLimit: 20,
+                                        points: 1000,
+                                        createdAt: Date.now() + index,
+                                        order: index
+                                    });
+                                });
+                                await batch.commit();
+                                console.log("Standard questions initialized from global DB");
+                            } else {
+                                console.warn("No questions found in global 'questions' collection");
+                            }
+                        } catch (err) {
+                            console.error("Error loading standard questions:", err);
+                        }
                     }
                 }
 
@@ -76,12 +99,12 @@ export default function HostDashboard() {
                     if (!hostPlayerSnap.exists()) {
                         await setDoc(hostPlayerRef, {
                             name: data.hostName || "管理者(プレイヤー)",
-                            iconUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`, // Consistent seed
+                            iconUrl: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`,
                             score: 0,
                             totalTime: 0,
                             joinedAt: Date.now(),
                             answers: {},
-                            isHost: true // Mark as host player
+                            isHost: true
                         });
                         toast({
                             title: "プレイヤーとして参加しました",
@@ -131,6 +154,17 @@ export default function HostDashboard() {
             toast({
                 title: "冒険者がいません",
                 description: "少なくとも一人のプレイヤーが参加する必要があります。",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        const questionsRef = collection(db, "rooms", roomId, "questions");
+        const qSnap = await getDocs(questionsRef);
+        if (qSnap.empty) {
+            toast({
+                title: "問題がありません",
+                description: "クイズ問題が読み込まれていません。画面を再読み込みするか、管理者にお問い合わせください。",
                 variant: "destructive",
             });
             return;

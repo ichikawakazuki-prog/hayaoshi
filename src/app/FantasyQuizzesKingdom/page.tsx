@@ -67,6 +67,7 @@ export default function Home() {
         createdAt: Date.now(),
         // Save mode here so room logic knows where to fetch questions from
         type: mode,
+        hostParticipates,
         shortId: newId
       });
 
