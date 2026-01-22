@@ -23,9 +23,8 @@ const notoSansJP = Noto_Sans_JP({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sparks-station.com"),
-  alternates: {
-    canonical: "/",
-  },
+
+
   title: {
     default: "Sparks Station | Micro-SaaS Insights for Engineers",
     template: "%s | Sparks Station",

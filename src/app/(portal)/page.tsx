@@ -4,6 +4,14 @@ import Pagination from './components/Pagination';
 
 const POSTS_PER_PAGE = 6;
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    alternates: {
+        canonical: '/',
+    },
+};
+
 export default async function PortalPage({
     searchParams,
 }: {

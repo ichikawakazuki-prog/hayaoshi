@@ -5,6 +5,9 @@ import { Lightbulb, Database, Code2 } from 'lucide-react';
 export const metadata: Metadata = {
     title: 'About | Sparks Station - 知見と実装の交差点',
     description: 'Sparks Stationは、世界の最先端SaaSビジネスの成功事例を解剖し、その知見を自らのプロダクト開発へと昇華させる「SaaS Analysis & Studio」です。',
+    alternates: {
+        canonical: '/about',
+    },
 };
 
 export default function AboutPage() {

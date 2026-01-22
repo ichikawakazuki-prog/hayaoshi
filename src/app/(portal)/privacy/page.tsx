@@ -3,6 +3,9 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'プライバシーポリシー | Sparks Station',
+    alternates: {
+        canonical: '/privacy',
+    },
 };
 
 export default function PrivacyPage() {

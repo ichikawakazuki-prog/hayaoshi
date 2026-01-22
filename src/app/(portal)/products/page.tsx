@@ -7,6 +7,9 @@ import { Gamepad2, Sparkles, Construction } from 'lucide-react';
 export const metadata: Metadata = {
     title: 'Products | Sparks Station',
     description: 'Sparks Stationが開発・運営しているプロダクト一覧。',
+    alternates: {
+        canonical: '/products',
+    },
 };
 
 export default function ProductsPage() {

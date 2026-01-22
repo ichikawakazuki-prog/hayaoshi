@@ -19,6 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return {
             title: `${post.metadata.title} | Sparks Station`,
             description: post.metadata.summary,
+            alternates: {
+                canonical: `/posts/${slug}`,
+            },
         };
     } catch {
         return {

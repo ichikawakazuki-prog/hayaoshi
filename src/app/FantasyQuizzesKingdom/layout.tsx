@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         description: "知識と速さで運命を切り拓け。最大同時対戦可能なRPG風クイズゲーム。",
         images: ["/key-visual.png"],
     },
+    alternates: {
+        canonical: '/FantasyQuizzesKingdom',
+    },
 };
 
 export default function QuizLayout({
