@@ -45,3 +45,8 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
         color: "text-white"
     }
 ];
+
+export const ADMIN_WHITELIST = [
+    "ichikawa.kazuki@shibaurafzk.com",
+    "kazuki2kr@gmail.com"
+];

@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 
-const WHITELIST = ["ichikawa.kazuki@shibaurafzk.com"];
+import { ADMIN_WHITELIST } from "../../lib/constants";
 
 interface RankingEntry {
     id: string;
@@ -48,7 +48,7 @@ export default function RankingAdmin() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const isAnonymous = user?.isAnonymous;
-    const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
+    const isAuthorized = user && !isAnonymous && user.email && ADMIN_WHITELIST.includes(user.email);
 
     useEffect(() => {
         if (!loading && (!isAuthorized || isAnonymous)) {

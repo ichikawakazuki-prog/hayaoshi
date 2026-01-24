@@ -2,6 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper function to check if the user is the specific admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'kazuki2kr@gmail.com';
+    }
+
     // ==========================================
     // Fantasy Quizzes Kingdom Game Rules
     // ==========================================
@@ -9,13 +14,13 @@ service cloud.firestore {
     // クイズ問題管理 (Global Questions)
     match /questions/{questionId} {
       allow read: if true; // 誰でも読み取り可能（ゲーム開始に必須）
-      allow write: if request.auth != null; // 編集は認証ユーザーのみ（本来は管理者のみにすべきだが開発中は認証済みで許可）
+      allow write: if isAdmin(); // 編集は管理者のみ
     }
 
     // ランキング (Global Leaderboard)
     match /leaderboard/{scoreId} {
       allow read: if true;
-      allow create: if request.auth != null || true; // 匿名ユーザーも含めてスコア登録許可 (trueで全開にする場合は注意だが、匿名認証推奨のため auth != null が良い)
+      allow create: if true; // 匿名ユーザーも含めてスコア登録許可
     }
 
     // ゲームルーム (Rooms)
@@ -38,22 +43,17 @@ service cloud.firestore {
     }
 
     // ==========================================
-    // Portal / Blog Feature Rules
+    // Portal / Blog Feature Rules (Existing)
     // ==========================================
     
-    // 記事の統計データ（投票・コメント数）
+    // 記事の統計データ
     match /posts_stats/{slug} {
-      allow read: if true; // 誰でも見れる
-      allow write: if true; // 投票やカウント更新
+      allow read: if true; 
+      allow write: if true; 
       
-      // コメントのサブコレクション
       match /comments/{commentId} {
-        allow read: if true; // 誰でも見れる
-        
-        // 作成: ログインしており、かつ自分のIDで書き込む場合のみ許可
+        allow read: if true; 
         allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-        
-        // 削除: ログインしており、かつ自分のIDのコメントのみ許可
         allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
       }
     }

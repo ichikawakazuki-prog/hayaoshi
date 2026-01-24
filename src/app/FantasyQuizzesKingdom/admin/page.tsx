@@ -7,14 +7,14 @@ import { Loader2, Lock, LogIn, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const WHITELIST = ["ichikawa.kazuki@shibaurafzk.com"];
+import { ADMIN_WHITELIST } from "../lib/constants";
 
 export default function AdminPage() {
     const { user, loading, loginWithGoogle, logout } = useAuth();
     const router = useRouter();
 
     const isAnonymous = user?.isAnonymous;
-    const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
+    const isAuthorized = user && !isAnonymous && user.email && ADMIN_WHITELIST.includes(user.email);
 
 
     if (loading) {

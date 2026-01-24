@@ -33,7 +33,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-const WHITELIST = ["ichikawa.kazuki@shibaurafzk.com"];
+import { ADMIN_WHITELIST } from "../../lib/constants";
 
 interface Question {
     id: string;
@@ -65,7 +65,7 @@ export default function QuestionsAdmin() {
     });
 
     const isAnonymous = user?.isAnonymous;
-    const isAuthorized = user && !isAnonymous && user.email && WHITELIST.includes(user.email);
+    const isAuthorized = user && !isAnonymous && user.email && ADMIN_WHITELIST.includes(user.email);
 
     useEffect(() => {
         if (!loading && (!isAuthorized || isAnonymous)) {
@@ -163,15 +163,35 @@ export default function QuestionsAdmin() {
                 let successCount = 0;
                 let errorCount = 0;
 
+                // Category Mapping for CSV
+                const categoryMap: Record<string, string> = {
+                    "一般常識": "general",
+                    "general": "general",
+                    "パーティ": "party",
+                    "party": "party",
+                    "アニメ・ゲーム": "anime-game",
+                    "anime": "anime-game",
+                    "歴史・学習": "study",
+                    "history": "study",
+                    "study": "study"
+                };
+
                 for (const line of lines) {
-                    // Simple CSV Parse (Careful with commas in content, but for this app simple is fine)
+                    // Skip header if it looks like one
+                    if (line.startsWith("問題文,")) continue;
+
+                    // Simple CSV Parse
                     const parts = line.split(',').map(p => p.trim());
                     if (parts.length >= 8) {
+                        // Map category name to ID if possible, else keep as is (or default to general)
+                        const rawCat = parts[6];
+                        const mappedCat = categoryMap[rawCat] || categoryMap[rawCat.replace(/"/g, "")] || "general";
+
                         const question = {
-                            text: parts[0],
+                            text: parts[0].replace(/^"(.*)"$/, '$1'), // Remove wrapping quotes if any
                             options: [parts[1], parts[2], parts[3], parts[4]],
                             correctIndex: parseInt(parts[5]),
-                            category: parts[6],
+                            category: mappedCat,
                             difficulty: parseInt(parts[7])
                         };
 
@@ -202,9 +222,10 @@ export default function QuestionsAdmin() {
     };
 
     const downloadTemplate = () => {
-        const headers = "問題文,選択肢1,選択肢2,選択肢3,選択肢4,正解番号(0-3),カテゴリー,難易度(1-5)\n";
-        const sample = "日本の首都は？,東京,大阪,京都,福岡,0,一般常識,1";
-        const blob = new Blob([headers + sample], { type: 'text/csv;charset=utf-8;' });
+        const headers = "問題文,選択肢1,選択肢2,選択肢3,選択肢4,正解番号(0-3),カテゴリー(一般常識/パーティ/アニメ・ゲーム/歴史・学習),難易度(1-5)\n";
+        const sample1 = "日本の首都は？,東京,大阪,京都,福岡,0,一般常識,1\n";
+        const sample2 = "ドラゴンの弱点は？,火,水,氷,雷,2,アニメ・ゲーム,3";
+        const blob = new Blob([headers + sample1 + sample2], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
