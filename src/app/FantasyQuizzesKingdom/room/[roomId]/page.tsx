@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc, collection, getCountFromServer } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -67,16 +67,31 @@ export default function GuestLobby() {
     const handleJoin = async () => {
         if (!user || !nickname || !selectedIcon) return;
 
-        await setDoc(doc(db, "rooms", roomId, "players", user.uid), {
-            name: nickname,
-            iconUrl: selectedIcon,
-            score: 0,
-            totalTime: 0,
-            joinedAt: Date.now(),
-            answers: {}
-        });
+        try {
+            // Check current player count
+            const playersRef = collection(db, "rooms", roomId, "players");
+            const snapshot = await getCountFromServer(playersRef);
+            const currentCount = snapshot.data().count;
 
-        setIsJoined(true);
+            if (currentCount >= 50) {
+                alert("このルームは満員です（最大50名）。参加できません。");
+                return;
+            }
+
+            await setDoc(doc(db, "rooms", roomId, "players", user.uid), {
+                name: nickname,
+                iconUrl: selectedIcon,
+                score: 0,
+                totalTime: 0,
+                joinedAt: Date.now(),
+                answers: {}
+            });
+
+            setIsJoined(true);
+        } catch (error) {
+            console.error("Join error:", error);
+            alert("参加処理に失敗しました。もう一度お試しください。");
+        }
     };
 
     if (roomExists === false) {
@@ -122,7 +137,8 @@ export default function GuestLobby() {
 
                             <div className="pt-6 border-t border-white/5 space-y-4 text-center">
                                 <p className="text-amber-200/70 text-xs italic leading-relaxed">
-                                    入力した名前はランキングや結果画面に表示されます。
+                                    入力した名前はランキングや結果画面に表示されます。<br />
+                                    ※ 1ルームの最大参加人数は50名です。
                                 </p>
                                 <Button
                                     onClick={handleJoin}

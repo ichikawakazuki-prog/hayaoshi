@@ -370,7 +370,7 @@ export default function HostDashboard() {
                             <div className="flex justify-between items-end">
                                 <h2 className="text-2xl font-black italic gold-text flex items-center gap-3">
                                     <Users className="h-7 w-7" />
-                                    参加者一覧 ({players.length})
+                                    参加者一覧 ({players.length} / 50)
                                 </h2>
                             </div>
                             {players.length === 0 ? (

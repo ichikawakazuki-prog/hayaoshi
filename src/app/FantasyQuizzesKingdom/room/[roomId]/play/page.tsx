@@ -28,6 +28,8 @@ export default function GuestPlay() {
     const router = useRouter();
     const feedbackTimeout = useRef<NodeJS.Timeout | null>(null);
 
+    const [questions, setQuestions] = useState<any[]>([]);
+
     useEffect(() => {
         if (authLoading || !user) return;
 
@@ -41,24 +43,17 @@ export default function GuestPlay() {
                     router.push(`/room/${roomId}/results`);
                     return;
                 }
-
-                if (roomData.currentQuestionIndex !== -1) {
-                    const qSnap = await getDoc(doc(db, "rooms", roomId, "questions", `question_${roomData.currentQuestionIndex}`));
-                    // Wait, previous implementation might have different naming for questions in subcollection
-                    // Let's use the list instead. Wait, I should have fetched questions or used a query.
-                    // Actually, the previous play page fetched ALL questions or used a known pattern.
-                    // Let's check how questions are stored. In edit page, it uses addDoc to collection.
-                }
             }
         });
 
-        // Correct way to get current question
-        const fetchCurrentQuestion = async (index: number) => {
-            // Need to get the question at this index.
-            // Since I don't Have the list here, I'll use a better approach: 
-            // The room object contains currentQuestionIndex. 
-            // I'll fetch the question subcollection ordered by createdAt.
-        };
+        // 1. Fetch ALL questions ONCE at start
+        const questionsRef = collection(db, "rooms", roomId, "questions");
+        const unsubscribeQuestions = onSnapshot(questionsRef, (snapshot) => {
+            const qs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Sort by createdAt or order just in case
+            qs.sort((a: any, b: any) => (a.createdAt || 0) - (b.createdAt || 0));
+            setQuestions(qs);
+        });
 
         const playerRef = doc(db, "rooms", roomId, "players", user.uid);
         const unsubscribePlayer = onSnapshot(playerRef, (snapshot) => {
@@ -69,30 +64,33 @@ export default function GuestPlay() {
 
         return () => {
             unsubscribeRoom();
+            unsubscribeQuestions();
             unsubscribePlayer();
         };
     }, [roomId, user, authLoading, router]);
 
-    // Better question sync
+    // 2. Sync Current Question from Local State
     useEffect(() => {
-        if (!room || room.currentQuestionIndex === -1) return;
+        if (!room || questions.length === 0) return;
 
-        const unsubscribe = onSnapshot(collection(db, "rooms", roomId, "questions"), (snapshot) => {
-            const qs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            qs.sort((a: any, b: any) => a.createdAt - b.createdAt);
-            const q = qs[room.currentQuestionIndex];
-            if (q) {
+        // Handle race condition where room index updates before questions load or vice versa
+        if (room.currentQuestionIndex >= 0 && room.currentQuestionIndex < questions.length) {
+            const q = questions[room.currentQuestionIndex];
+
+            // Only update if question ID actually changed to avoid resets during partial updates
+            if (!currentQuestion || currentQuestion.id !== q.id) {
                 setCurrentQuestion(q);
                 // Reset state for new question
                 if (room.currentPhase === "question") {
                     setSelectedAnswer(null);
                     setShowFeedback(false);
+                    // Also reset timer based on new question limit
+                    const limit = q.timeLimit || 20;
+                    setTimeLeft(limit);
                 }
             }
-        });
-
-        return () => unsubscribe();
-    }, [room?.currentQuestionIndex, roomId]);
+        }
+    }, [room?.currentQuestionIndex, questions, room?.currentPhase]);
 
     useEffect(() => {
         if (room?.currentPhase === "question" && currentQuestion) {
