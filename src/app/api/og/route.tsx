@@ -12,12 +12,38 @@ export async function GET(req: NextRequest) {
         const genre = searchParams.get('genre') || 'ALL';
         const rankLabel = searchParams.get('rankLabel') || 'RANK';
 
-        const origin = new URL(req.url).origin;
-
         // Load font
         const fontData = await fetch(
             new URL('https://fonts.gstatic.com/s/notoserif/v23/ga6Iaw1J5X9T9RW6j9bNfFcWaA.ttf', import.meta.url)
         ).then((res) => res.arrayBuffer());
+
+        // Load Background Image
+        // Note: In Vercel Edge functions, local file access is limited. 
+        // We use an absolute URL if possible, or fetch from the deployment URL.
+        // For stability in this environment, let's assume the image is available via public URL.
+        // However, referencing via origin is often flaky in preview or local.
+        // Let's try to use the deployment URL if available, otherwise construct it.
+        // A common pattern is to fetch it from the public folder using the properly resolved URL.
+
+        // For this specific fix, we will load the image data as ArrayBuffer just like the font
+        // assuming it is in the public folder and we can access it via URL.
+        // Actually, for local/edge, `import.meta.url` relative path to `public` doesn't work directly for `fetch` 
+        // if it's not bundled.
+        // Let's rely on the absolute URL but ensure we have a fallback or correct protocol.
+
+        const origin = new URL(req.url).origin;
+        const bgImageUrl = `${origin}/score-card-bg.png`;
+
+        // Fetching the image server-side to pass as data might be safer to avoid mixed content or localhost accessibility issues from the "browser" inside the OG generator.
+        const bgImageData = await fetch(bgImageUrl).then(res => res.arrayBuffer());
+
+        // Convert to base64 for embedding (safer for some environments)
+        // or just pass the ArrayBuffer if ImageResponse supports it? 
+        // ImageResponse supports creating an ImageBitmap or similar, but for JSX `img`, we need a src.
+        // src can be a data URL.
+
+        const base64Bg = Buffer.from(bgImageData).toString('base64');
+        const bgSrc = `data:image/png;base64,${base64Bg}`;
 
         return new ImageResponse(
             (
@@ -26,21 +52,21 @@ export async function GET(req: NextRequest) {
                         height: '100%',
                         width: '100%',
                         display: 'flex',
-                        backgroundColor: '#0f0505', // Darker background for "letterbox" effect
+                        backgroundColor: '#0f0505',
                         position: 'relative',
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
                 >
-                    {/* The Card Container - Centered and Aspect Ratio Preserved roughly */}
+                    {/* The Card Container */}
                     <div
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            width: '500px', // Portrait width
-                            height: '100%', // Full height
+                            width: '500px',
+                            height: '100%',
                             position: 'relative',
                             backgroundColor: '#1a0b0b',
                             overflow: 'hidden',
@@ -50,7 +76,7 @@ export async function GET(req: NextRequest) {
                     >
                         {/* Background Image Layer */}
                         <img
-                            src={`${origin}/score-card-bg.png`}
+                            src={bgSrc}
                             style={{
                                 position: 'absolute',
                                 top: 0,
