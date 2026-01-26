@@ -1,7 +1,7 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
-
-export const runtime = 'edge';
+import fs from 'fs';
+import path from 'path';
 
 export async function GET(req: NextRequest) {
     try {
@@ -18,29 +18,9 @@ export async function GET(req: NextRequest) {
         ).then((res) => res.arrayBuffer());
 
         // Load Background Image
-        // Note: In Vercel Edge functions, local file access is limited. 
-        // We use an absolute URL if possible, or fetch from the deployment URL.
-        // For stability in this environment, let's assume the image is available via public URL.
-        // However, referencing via origin is often flaky in preview or local.
-        // Let's try to use the deployment URL if available, otherwise construct it.
-        // A common pattern is to fetch it from the public folder using the properly resolved URL.
-
-        // For this specific fix, we will load the image data as ArrayBuffer just like the font
-        // assuming it is in the public folder and we can access it via URL.
-        // Actually, for local/edge, `import.meta.url` relative path to `public` doesn't work directly for `fetch` 
-        // if it's not bundled.
-        // Let's rely on the absolute URL but ensure we have a fallback or correct protocol.
-
-        const origin = new URL(req.url).origin;
-        const bgImageUrl = `${origin}/score-card-bg.png`;
-
-        // Fetching the image server-side to pass as data might be safer to avoid mixed content or localhost accessibility issues from the "browser" inside the OG generator.
-        const bgImageData = await fetch(bgImageUrl).then(res => res.arrayBuffer());
-
-        // Convert to base64 for embedding (safer for some environments)
-        // or just pass the ArrayBuffer if ImageResponse supports it? 
-        // ImageResponse supports creating an ImageBitmap or similar, but for JSX `img`, we need a src.
-        // src can be a data URL.
+        // Use filesystem for reliability in Node.js runtime
+        const bgPath = path.join(process.cwd(), 'public', 'score-card-bg.png');
+        const bgImageData = fs.readFileSync(bgPath);
 
         const base64Bg = Buffer.from(bgImageData).toString('base64');
         const bgSrc = `data:image/png;base64,${base64Bg}`;
