@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface FantasyCountdownProps {
     seconds?: number; // Kept for compatibility, but animation is fixed 3-2-1 sequence
@@ -15,13 +15,22 @@ const COUNTDOWN_SEQUENCE = [
 ];
 
 export default function FantasyCountdown({ onComplete }: FantasyCountdownProps) {
+    const onCompleteRef = useRef(onComplete);
+
+    // Keep ref updated
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
+
     useEffect(() => {
         // Complete the countdown after the full sequence (3s numbers + 0.8s START)
         const timer = setTimeout(() => {
-            onComplete();
+            if (onCompleteRef.current) {
+                onCompleteRef.current();
+            }
         }, 3800);
         return () => clearTimeout(timer);
-    }, [onComplete]);
+    }, []); // Empty dependency array ensures timer is NOT reset on re-renders
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none">
