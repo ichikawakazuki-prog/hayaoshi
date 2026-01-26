@@ -28,7 +28,9 @@ export default function GuestPlay() {
     const [speedBonusEarned, setSpeedBonusEarned] = useState(0);
 
     // Countdown state
-    const [countdownValue, setCountdownValue] = useState<number | null>(null);
+    const [showCountdown, setShowCountdown] = useState(false);
+    const [initialCountdownSeconds, setInitialCountdownSeconds] = useState(3);
+    const [hasCountdownStarted, setHasCountdownStarted] = useState(false);
     const router = useRouter();
     const feedbackTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -105,15 +107,23 @@ export default function GuestPlay() {
                 // Countdown Logic for 1st Question
                 if (room.currentQuestionIndex === 0) {
                     const diff = (startTime - now) / 1000;
-                    if (diff > -1) { // Show until -1
-                        setCountdownValue(Math.ceil(diff)); // 3, 2, 1, 0, -1
+                    if (diff > 0.5) {
+                        // Only start countdown ONCE
+                        if (!hasCountdownStarted) {
+                            setInitialCountdownSeconds(Math.ceil(diff));
+                            setShowCountdown(true);
+                            setHasCountdownStarted(true);
+                        }
                         setTimeLeft(currentQuestion.timeLimit || 20);
-                        if (diff > 0) return; // Wait for start
+                        return; // Wait for start
                     } else {
-                        if (countdownValue !== null) setCountdownValue(null);
+                        // Ensure countdown is cleared if we joined late
+                        if (!showCountdown && !hasCountdownStarted) {
+                            // Late joiner or refresh close to start
+                        }
                     }
                 } else {
-                    if (countdownValue !== null) setCountdownValue(null);
+                    // Reset not needed here
                 }
 
                 const elapsed = (now - startTime) / 1000;
@@ -124,9 +134,8 @@ export default function GuestPlay() {
             return () => clearInterval(interval);
         } else if (room?.currentPhase === "result") {
             setTimeLeft(0);
-            setCountdownValue(null);
         }
-    }, [room?.currentPhase, room?.startTime, currentQuestion]);
+    }, [room?.currentPhase, room?.startTime, currentQuestion, hasCountdownStarted, showCountdown]);
 
     const handleAnswer = async (index: number) => {
         if (selectedAnswer !== null || room.currentPhase !== "question" || !currentQuestion) return;
@@ -175,10 +184,11 @@ export default function GuestPlay() {
             <div className="absolute inset-0 bg-[url('/fantasy-bg.png')] bg-cover bg-center mix-blend-overlay opacity-10 pointer-events-none" />
 
             <AnimatePresence>
-                {countdownValue !== null && countdownValue >= 0 && (
+                {showCountdown && (
                     <div className="fixed inset-0 z-[200]">
                         <FantasyCountdown
-                            currentCount={countdownValue}
+                            seconds={initialCountdownSeconds}
+                            onComplete={() => setShowCountdown(false)}
                         />
                     </div>
                 )}

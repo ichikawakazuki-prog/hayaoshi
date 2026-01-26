@@ -29,8 +29,10 @@ export default function HostPlay() {
     const [basePointsEarned, setBasePointsEarned] = useState(0);
     const [speedBonusEarned, setSpeedBonusEarned] = useState(0);
 
-    // Countdown state (number to show: 3, 2, 1, 0=START)
-    const [countdownValue, setCountdownValue] = useState<number | null>(null);
+    // Countdown state
+    const [showCountdown, setShowCountdown] = useState(false);
+    const [initialCountdownSeconds, setInitialCountdownSeconds] = useState(3);
+    const [hasCountdownStarted, setHasCountdownStarted] = useState(false);
 
     useEffect(() => {
         if (authLoading || !user) return;
@@ -101,16 +103,24 @@ export default function HostPlay() {
                 // Countdown Logic for 1st Question
                 if (room.currentQuestionIndex === 0) {
                     const diff = (startTime - now) / 1000;
-                    if (diff > -1) { // Show until -1 (so 0 "START" is visible for a moment)
-                        setCountdownValue(Math.ceil(diff)); // 3, 2, 1, 0, -1
+                    if (diff > 0.5) {
+                        // Only start countdown ONCE
+                        if (!hasCountdownStarted) {
+                            setInitialCountdownSeconds(Math.ceil(diff));
+                            setShowCountdown(true);
+                            setHasCountdownStarted(true);
+                        }
                         setTimeLeft(questions[room.currentQuestionIndex]?.timeLimit || 20);
-                        if (diff > 0) return; // Wait for start
+                        return; // Wait for start
                     } else {
-                        if (countdownValue !== null) setCountdownValue(null);
+                        // Ensure countdown is cleared if we joined late
+                        // But if showCountdown is true, let it finish naturally via onComplete
+                        if (!showCountdown && !hasCountdownStarted) {
+                            // Late joiner or refresh close to start
+                        }
                     }
                 } else {
-                    // For other questions, ensure no countdown
-                    if (countdownValue !== null) setCountdownValue(null);
+                    // Reset for next game? No, this component mounts per game.
                 }
 
                 const elapsed = (now - startTime) / 1000;
@@ -130,7 +140,6 @@ export default function HostPlay() {
             return () => clearInterval(interval);
         } else if (room?.currentPhase !== "question") {
             setTimeLeft(0);
-            setCountdownValue(null);
         }
     }, [room?.currentPhase, room?.startTime, questions, room?.currentQuestionIndex]);
 
@@ -222,10 +231,11 @@ export default function HostPlay() {
 
             {/* Countdown Overlay */}
             <AnimatePresence>
-                {countdownValue !== null && countdownValue >= 0 && (
+                {showCountdown && (
                     <div className="fixed inset-0 z-[200]">
                         <FantasyCountdown
-                            currentCount={countdownValue}
+                            seconds={initialCountdownSeconds}
+                            onComplete={() => setShowCountdown(false)}
                         />
                     </div>
                 )}

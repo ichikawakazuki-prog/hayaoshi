@@ -1,32 +1,53 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 interface FantasyCountdownProps {
-    currentCount: number; // 3, 2, 1, 0 (START)
+    seconds?: number;
+    onComplete: () => void;
 }
 
-export default function FantasyCountdown({ currentCount }: FantasyCountdownProps) {
+export default function FantasyCountdown({ seconds = 3, onComplete }: FantasyCountdownProps) {
+    // Local state for smooth countdown
+    const [count, setCount] = useState(seconds);
+
+    useEffect(() => {
+        // Countdown Logic
+        if (count > 0) {
+            const timer = setTimeout(() => {
+                setCount(prev => prev - 1);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else {
+            // "START!" Phase (count <= 0)
+            const timer = setTimeout(() => {
+                onComplete();
+            }, 800); // Show "START!" for 0.8s then complete
+            return () => clearTimeout(timer);
+        }
+    }, [count, onComplete]);
+
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none">
             <AnimatePresence mode="wait">
-                {currentCount > 0 ? (
+                {count > 0 ? (
                     <motion.div
-                        key={currentCount}
+                        key={count}
                         className="relative flex items-center justify-center"
                         initial={{ scale: 2, opacity: 0, filter: "blur(20px)" }}
                         animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
                         exit={{ scale: 0, opacity: 0, filter: "blur(10px)" }}
                         transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}
                     >
-                        {/* Core Number */}
-                        <span className="relative z-10 text-[12rem] md:text-[20rem] font-black italic gold-text tracking-tighter drop-shadow-[0_0_50px_rgba(251,191,36,0.8)]" style={{ textShadow: "0 0 20px black" }}>
-                            {currentCount}
+                        {/* Core Number - High Z-Index */}
+                        <span className="relative z-50 text-[12rem] md:text-[20rem] font-black italic gold-text tracking-tighter drop-shadow-[0_0_50px_rgba(251,191,36,0.8)]" style={{ textShadow: "0 0 20px black" }}>
+                            {count}
                         </span>
 
-                        {/* Orbiting Particles */}
+                        {/* Orbiting Particles - Lower Z-Index */}
                         <motion.div
-                            className="absolute inset-0 z-0"
+                            className="absolute inset-0 z-10"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                         >
@@ -34,7 +55,7 @@ export default function FantasyCountdown({ currentCount }: FantasyCountdownProps
                             <div className="absolute bottom-0 left-1/2 w-4 h-4 bg-amber-200 rounded-full blur-sm shadow-[0_0_20px_#fde68a]" />
                         </motion.div>
 
-                        {/* Gathering Light Effect (Reverse Ring) */}
+                        {/* Gathering Light Effect */}
                         <motion.div
                             className="absolute inset-0 z-0 rounded-full border-4 border-amber-500/50"
                             initial={{ scale: 2, opacity: 0 }}
@@ -52,7 +73,7 @@ export default function FantasyCountdown({ currentCount }: FantasyCountdownProps
                         transition={{ duration: 0.4 }}
                         className="relative flex items-center justify-center"
                     >
-                        <span className="relative z-10 text-8xl md:text-9xl font-black italic text-white drop-shadow-[0_0_60px_rgba(255,255,255,0.8)]" style={{ textShadow: "0 0 20px rgba(251, 191, 36, 0.5)" }}>
+                        <span className="relative z-50 text-8xl md:text-9xl font-black italic text-white drop-shadow-[0_0_60px_rgba(255,255,255,0.8)]" style={{ textShadow: "0 0 30px rgba(251, 191, 36, 0.8)" }}>
                             START!
                         </span>
                         {/* Shockwave */}
