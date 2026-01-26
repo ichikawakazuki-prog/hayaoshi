@@ -161,12 +161,7 @@ export default function Home() {
                   "F1 (Formula 1) クイズ",
                   "マインクラフト (Minecraft) クイズ",
                   "歴史・雑学・時事問題"
-                ],
-                "aggregateRating": {
-                  "@type": "AggregateRating",
-                  "ratingValue": "4.8",
-                  "ratingCount": "120"
-                }
+                ]
               })
             }}
           />
