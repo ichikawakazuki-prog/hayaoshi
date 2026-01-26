@@ -28,7 +28,7 @@ export default function GuestPlay() {
     const [speedBonusEarned, setSpeedBonusEarned] = useState(0);
 
     // Countdown state
-    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+    const [countdownValue, setCountdownValue] = useState<number | null>(null);
     const router = useRouter();
     const feedbackTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -105,15 +105,15 @@ export default function GuestPlay() {
                 // Countdown Logic for 1st Question
                 if (room.currentQuestionIndex === 0) {
                     const diff = (startTime - now) / 1000;
-                    if (diff > 0) {
-                        setCountdownSeconds(Math.ceil(diff)); // 3, 2, 1
+                    if (diff > -1) { // Show until -1
+                        setCountdownValue(Math.ceil(diff)); // 3, 2, 1, 0, -1
                         setTimeLeft(currentQuestion.timeLimit || 20);
-                        return; // Wait for start
+                        if (diff > 0) return; // Wait for start
                     } else {
-                        if (countdownSeconds !== null) setCountdownSeconds(null);
+                        if (countdownValue !== null) setCountdownValue(null);
                     }
                 } else {
-                    if (countdownSeconds !== null) setCountdownSeconds(null);
+                    if (countdownValue !== null) setCountdownValue(null);
                 }
 
                 const elapsed = (now - startTime) / 1000;
@@ -124,7 +124,7 @@ export default function GuestPlay() {
             return () => clearInterval(interval);
         } else if (room?.currentPhase === "result") {
             setTimeLeft(0);
-            setCountdownSeconds(null);
+            setCountdownValue(null);
         }
     }, [room?.currentPhase, room?.startTime, currentQuestion]);
 
@@ -175,11 +175,10 @@ export default function GuestPlay() {
             <div className="absolute inset-0 bg-[url('/fantasy-bg.png')] bg-cover bg-center mix-blend-overlay opacity-10 pointer-events-none" />
 
             <AnimatePresence>
-                {countdownSeconds !== null && (
+                {countdownValue !== null && countdownValue >= 0 && (
                     <div className="fixed inset-0 z-[200]">
                         <FantasyCountdown
-                            seconds={Math.min(3, countdownSeconds)}
-                            onComplete={() => setCountdownSeconds(null)}
+                            currentCount={countdownValue}
                         />
                     </div>
                 )}

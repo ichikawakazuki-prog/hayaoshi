@@ -251,6 +251,35 @@ export default function Home() {
                 {viewMode === "MULTI" && (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-4">
                     <div className="space-y-4">
+                      {/* Join Room Section (Moved to Top) */}
+                      <div className="text-center">
+                        <h3 className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-4">ルームに参加 (JOIN ROOM)</h3>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="6桁のコード"
+                            value={roomId}
+                            onChange={(e) => setRoomId(e.target.value)}
+                            maxLength={6}
+                            className="h-14 bg-black/40 border-amber-900/50 text-white placeholder:text-white/20 text-center text-xl font-mono tracking-widest focus:border-amber-500 focus:ring-amber-500"
+                          />
+                          <Button
+                            onClick={handleJoinRoom}
+                            disabled={roomId.length !== 6 || isLoading}
+                            className="h-14 px-6 bg-amber-600 hover:bg-amber-500 text-black font-black disabled:opacity-50 disabled:bg-slate-800 shrink-0"
+                          >
+                            参加
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="relative py-2">
+                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-white/10" />
+                        <span className="relative bg-[#0d0905] px-3 text-[10px] text-white/30 uppercase tracking-[0.4em] font-black block mx-auto w-fit">
+                          OR
+                        </span>
+                      </div>
+
+                      {/* Create Room Section (Moved to Bottom) */}
                       <div className="text-center">
                         <h3 className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-4">ルーム作成 (Create Room)</h3>
 
@@ -283,33 +312,6 @@ export default function Home() {
                           >
                             <Gamepad2 className="mr-2 h-4 w-4 text-amber-400" />
                             既存問題で遊ぶ
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="relative py-2">
-                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-white/10" />
-                        <span className="relative bg-[#0d0905] px-3 text-[10px] text-white/30 uppercase tracking-[0.4em] font-black block mx-auto w-fit">
-                          OR
-                        </span>
-                      </div>
-
-                      <div className="text-center">
-                        <h3 className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-4">ルームに参加 (JOIN ROOM)</h3>
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="6桁のコード"
-                            value={roomId}
-                            onChange={(e) => setRoomId(e.target.value)}
-                            maxLength={6}
-                            className="h-14 bg-black/40 border-amber-900/50 text-white placeholder:text-white/20 text-center text-xl font-mono tracking-widest focus:border-amber-500 focus:ring-amber-500"
-                          />
-                          <Button
-                            onClick={handleJoinRoom}
-                            disabled={roomId.length !== 6 || isLoading}
-                            className="h-14 px-6 bg-amber-600 hover:bg-amber-500 text-black font-black disabled:opacity-50 disabled:bg-slate-800 shrink-0"
-                          >
-                            参加
                           </Button>
                         </div>
                       </div>

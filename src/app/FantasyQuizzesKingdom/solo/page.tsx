@@ -58,8 +58,8 @@ function SoloGameContent() {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Countdown state (number of seconds to countdown, null if not active)
-    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+    // Countdown state (number of seconds to show)
+    const [countdownValue, setCountdownValue] = useState<number | null>(null);
 
     const { user, loginAnonymously } = useAuth();
     const router = useRouter();
@@ -140,6 +140,22 @@ function SoloGameContent() {
         }
     }, [gameState, category]); // Added category to dependency array to refresh ranking on change
 
+    // Countdown Effect
+    useEffect(() => {
+        if (countdownValue !== null) {
+            if (countdownValue < 0) {
+                setCountdownValue(null);
+                nextQuestion(0, questions);
+                return;
+            }
+
+            const timer = setTimeout(() => {
+                setCountdownValue(prev => (prev !== null ? prev - 1 : null));
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [countdownValue, questions]);
+
     // Handle Game Start
     const startGame = async () => {
         if (!nickname.trim()) {
@@ -182,15 +198,15 @@ function SoloGameContent() {
 
             setQuestions(shuffled);
 
-            // Start countdown instead of immediate game start
-            setCountdownSeconds(3);
+            // Start countdown from 3
+            setCountdownValue(3);
 
             // Background setup
             setGameState("playing");
             setCurrentQuestionIndex(0);
             setScore(0);
             setTotalTime(0);
-            // nextQuestion will be called after countdown
+            // nextQuestion will be called via useEffect after countdown finishes (value < 0)
         } catch (error: any) {
             toast({ title: "エラー", description: error.message, variant: "destructive" });
         } finally {
@@ -271,13 +287,9 @@ function SoloGameContent() {
 
     return (
         <AnimatePresence mode="wait">
-            {countdownSeconds !== null && (
+            {countdownValue !== null && (
                 <FantasyCountdown
-                    seconds={countdownSeconds}
-                    onComplete={() => {
-                        setCountdownSeconds(null);
-                        nextQuestion(0, questions);
-                    }}
+                    currentCount={countdownValue}
                 />
             )}
 

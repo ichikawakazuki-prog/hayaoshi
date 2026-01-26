@@ -29,8 +29,8 @@ export default function HostPlay() {
     const [basePointsEarned, setBasePointsEarned] = useState(0);
     const [speedBonusEarned, setSpeedBonusEarned] = useState(0);
 
-    // Countdown state
-    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+    // Countdown state (number to show: 3, 2, 1, 0=START)
+    const [countdownValue, setCountdownValue] = useState<number | null>(null);
 
     useEffect(() => {
         if (authLoading || !user) return;
@@ -101,16 +101,16 @@ export default function HostPlay() {
                 // Countdown Logic for 1st Question
                 if (room.currentQuestionIndex === 0) {
                     const diff = (startTime - now) / 1000;
-                    if (diff > 0) {
-                        setCountdownSeconds(Math.ceil(diff)); // 3, 2, 1
+                    if (diff > -1) { // Show until -1 (so 0 "START" is visible for a moment)
+                        setCountdownValue(Math.ceil(diff)); // 3, 2, 1, 0, -1
                         setTimeLeft(questions[room.currentQuestionIndex]?.timeLimit || 20);
-                        return; // Wait for start
+                        if (diff > 0) return; // Wait for start
                     } else {
-                        if (countdownSeconds !== null) setCountdownSeconds(null);
+                        if (countdownValue !== null) setCountdownValue(null);
                     }
                 } else {
                     // For other questions, ensure no countdown
-                    if (countdownSeconds !== null) setCountdownSeconds(null);
+                    if (countdownValue !== null) setCountdownValue(null);
                 }
 
                 const elapsed = (now - startTime) / 1000;
@@ -130,7 +130,7 @@ export default function HostPlay() {
             return () => clearInterval(interval);
         } else if (room?.currentPhase !== "question") {
             setTimeLeft(0);
-            setCountdownSeconds(null);
+            setCountdownValue(null);
         }
     }, [room?.currentPhase, room?.startTime, questions, room?.currentQuestionIndex]);
 
@@ -222,11 +222,10 @@ export default function HostPlay() {
 
             {/* Countdown Overlay */}
             <AnimatePresence>
-                {countdownSeconds !== null && (
+                {countdownValue !== null && countdownValue >= 0 && (
                     <div className="fixed inset-0 z-[200]">
                         <FantasyCountdown
-                            seconds={Math.min(3, countdownSeconds)}
-                            onComplete={() => setCountdownSeconds(null)}
+                            currentCount={countdownValue}
                         />
                     </div>
                 )}
