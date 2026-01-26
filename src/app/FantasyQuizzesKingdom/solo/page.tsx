@@ -566,43 +566,50 @@ function SoloGameContent() {
                         <h2 className="text-4xl font-black gold-text tracking-widest uppercase">スコア確定</h2>
                     </div>
 
-                    <Card className="fantasy-card border-none bg-black/60 p-10 pt-16 space-y-8 relative !overflow-visible">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-10 py-3 bg-amber-950 border-2 border-amber-500 rounded-full text-amber-500 font-black tracking-[0.2em] z-10 whitespace-nowrap">
-                            YOUR RESULT
-                        </div>
+                    <ScoreCard
+                        playerName={nickname || "Guest"}
+                        genre={category === "all" ? "ALL" : QUIZ_CATEGORIES.find(c => c.id === category)?.name.toUpperCase() || "UNKNOWN"}
+                        score={score}
+                        rank={
+                            score >= 14000 ? "Legend" :
+                                score >= 12000 ? "Grand Master" :
+                                    score >= 10000 ? "Master" :
+                                        score >= 8000 ? "Expert" :
+                                            score >= 5000 ? "Adventurer" : "Novice"
+                        }
+                    />
 
-                        <div className="pt-4 space-y-1">
-                            <p className="text-6xl font-black font-mono gold-text italic tracking-tighter">
-                                {score} <span className="text-2xl not-italic tracking-normal">pt</span>
-                            </p>
-                            <p className="text-amber-200/40 text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                                <Timer className="h-4 w-4" /> Total Time: {totalTime.toFixed(1)}s
-                            </p>
-                            <div className="text-xs text-amber-500 font-bold uppercase tracking-widest mt-2 border-t border-white/5 pt-2">
-                                CATEGORY: {category.toUpperCase()}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-4">
-                            <Button
-                                onClick={() => setGameState("lobby")}
-                                className="w-full h-16 text-lg font-black fantasy-button text-amber-100"
-                            >
-                                もう一度挑戦する
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => setGameState("lobby")}
-                                className="w-full h-14 border-amber-900/50 text-amber-200/50 hover:bg-white/5"
-                            >
-                                タイトルに戻る
-                            </Button>
-                        </div>
-
-                        <div className="pt-4">
-                            <AdBanner adSlot="solo_result_bottom" />
-                        </div>
-                    </Card>
+                    <div className="flex flex-col gap-3">
+                        <Button
+                            onClick={() => {
+                                const rankTitle =
+                                    score >= 14000 ? "Legend" :
+                                        score >= 10000 ? "Master" :
+                                            score >= 8000 ? "Expert" :
+                                                score >= 5000 ? "Adventurer" : "Novice";
+                                const genreName = category === "all" ? "ALL" : QUIZ_CATEGORIES.find(c => c.id === category)?.name.toUpperCase() || "UNKNOWN";
+                                const text = `【TRIAL RECORD】\nName: ${nickname}\nGenre: ${genreName}\nScore: ${score}pt\nRank: ${rankTitle}\n\n#FantasyQuizzesKingdom #SparksStation #クイズ`;
+                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.origin)}`, '_blank');
+                            }}
+                            className="w-full h-14 bg-black text-white hover:bg-black/80 font-bold rounded-xl border border-white/10 flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                            結果をXでポスト
+                        </Button>
+                        <Button
+                            onClick={() => setGameState("lobby")}
+                            className="w-full h-14 text-lg font-black fantasy-button text-amber-100"
+                        >
+                            もう一度挑戦する
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.push("/FantasyQuizzesKingdom")}
+                            className="text-white/30 hover:text-amber-500"
+                        >
+                            ホームに戻る
+                        </Button>
+                    </div>
 
                     <div className="flex items-center justify-center gap-2 text-white/20 font-black tracking-[0.4em] text-[10px] uppercase">
                         Glory awaits the swift

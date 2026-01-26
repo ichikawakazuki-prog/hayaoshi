@@ -77,7 +77,7 @@ export default function GuestResults() {
 
                         <Button
                             onClick={() => {
-                                const text = `【TRIAL RECORD】\nName: ${myPlayer.name}\nScore: ${myPlayer.score}pt\nPosition: ${myRank}/${players.length}\n\n#FantasyQuizzesKingdom #SparksStation #クイズバトル`;
+                                const text = `【TRIAL RECORD】\nName: ${myPlayer.name}\nGenre: BATTLE\nScore: ${myPlayer.score}pt\nPosition: ${myRank}/${players.length}\n\n#FantasyQuizzesKingdom #SparksStation #クイズバトル`;
                                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.origin)}`, '_blank');
                             }}
                             className="w-full h-14 bg-black text-white hover:bg-black/80 font-bold rounded-xl border border-white/10 flex items-center justify-center gap-2"
