@@ -1,4 +1,4 @@
-import { Sparkles, BookOpen, Scroll, Gamepad2, PartyPopper, Box, Flag, Trophy } from "lucide-react";
+import { Sparkles, BookOpen, Scroll, Gamepad2, PartyPopper, Box, Flag, Trophy, Snowflake } from "lucide-react";
 
 export type QuizCategory = {
     id: string;
@@ -43,6 +43,13 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
         description: "G1レースや名馬の歴史",
         icon: Trophy,
         color: "text-amber-500"
+    },
+    {
+        id: "winter_olympics",
+        name: "冬季五輪",
+        description: "雪と氷の祭典の知識",
+        icon: Snowflake,
+        color: "text-cyan-400"
     },
     {
         id: "all",
