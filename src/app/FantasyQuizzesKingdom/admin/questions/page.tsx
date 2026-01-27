@@ -10,7 +10,8 @@ import {
     doc,
     updateDoc,
     query,
-    orderBy
+    orderBy,
+    writeBatch
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,8 @@ import {
     Database,
     Search,
     FileUp,
-    Download
+    Download,
+    Sparkles
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -407,6 +409,49 @@ export default function QuestionsAdmin() {
                                 )}
                             </div>
                         </div>
+                    </Card>
+
+                    {/* Data Maintenance Section */}
+                    <Card className="fantasy-card border-none bg-black/60 p-6 space-y-4">
+                        <h3 className="font-bold gold-text flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" /> データのメンテナンス
+                        </h3>
+                        <p className="text-xs text-white/40">「冬季五輪」などの日本語カテゴリー名を、システム用IDに一括変換します。</p>
+                        <Button
+                            onClick={async () => {
+                                if (!confirm("「冬季五輪」カテゴリーの問題をすべて「winter_olympics」に変換しますか？")) return;
+                                setIsLoading(true);
+                                try {
+                                    const qRef = collection(db, "questions");
+                                    const qSnap = await getDocs(qRef);
+                                    const batch = writeBatch(db);
+                                    let count = 0;
+
+                                    qSnap.docs.forEach(doc => {
+                                        const data = doc.data();
+                                        if (data.category === "冬季五輪") {
+                                            batch.update(doc.ref, { category: "winter_olympics" });
+                                            count++;
+                                        }
+                                    });
+
+                                    if (count > 0) {
+                                        await batch.commit();
+                                        toast({ title: "修正完了", description: `${count}件のデータを修正しました。` });
+                                        fetchQuestions();
+                                    } else {
+                                        toast({ title: "修正不要", description: "修正対象のデータは見つかりませんでした。" });
+                                    }
+                                } catch (e: any) {
+                                    toast({ title: "エラー", description: e.message, variant: "destructive" });
+                                } finally {
+                                    setIsLoading(false);
+                                }
+                            }}
+                            className="w-full bg-cyan-900/50 hover:bg-cyan-800/50 text-cyan-100 border border-cyan-500/30"
+                        >
+                            カテゴリーデータの一括修正 (冬季五輪)
+                        </Button>
                     </Card>
                 </div>
 
