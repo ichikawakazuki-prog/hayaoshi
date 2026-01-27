@@ -2,26 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 
 export default function PostStats({ slug, theme }: { slug: string, theme: any }) {
     const [stats, setStats] = useState({ helpful: 0, not_helpful: 0, commentCount: 0 });
 
     useEffect(() => {
-        const docRef = doc(db, 'posts_stats', slug);
-        const unsubscribe = onSnapshot(docRef, (doc) => {
-            if (doc.exists()) {
-                const data = doc.data();
-                setStats({
-                    helpful: data.helpful || 0,
-                    not_helpful: data.not_helpful || 0,
-                    commentCount: data.commentCount || 0
-                });
+        const fetchStats = async () => {
+            const docRef = doc(db, 'posts_stats', slug);
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setStats({
+                        helpful: data.helpful || 0,
+                        not_helpful: data.not_helpful || 0,
+                        commentCount: data.commentCount || 0
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching post stats:", error);
             }
-        });
+        };
 
-        return () => unsubscribe();
+        fetchStats();
     }, [slug]);
 
     return (

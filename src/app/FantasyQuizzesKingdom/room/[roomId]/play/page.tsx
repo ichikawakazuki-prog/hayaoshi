@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot, updateDoc, increment, getDoc, collection } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, increment, getDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Progress } from "@/components/ui/progress";
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Timer, Trophy, CheckCircle2, XCircle, Swords, Shield, Sparkles, Home } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FantasyCountdown from "@/app/FantasyQuizzesKingdom/components/FantasyCountdown";
+import Image from "next/image";
 
 export default function GuestPlay() {
     const { roomId } = useParams() as { roomId: string };
@@ -54,7 +55,7 @@ export default function GuestPlay() {
 
         // 1. Fetch ALL questions ONCE at start
         const questionsRef = collection(db, "rooms", roomId, "questions");
-        const unsubscribeQuestions = onSnapshot(questionsRef, (snapshot) => {
+        getDocs(questionsRef).then((snapshot) => {
             const qs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             // Sort by createdAt or order just in case
             qs.sort((a: any, b: any) => (a.createdAt || 0) - (b.createdAt || 0));
@@ -70,7 +71,7 @@ export default function GuestPlay() {
 
         return () => {
             unsubscribeRoom();
-            unsubscribeQuestions();
+            // unsubscribeQuestions();
             unsubscribePlayer();
         };
     }, [roomId, user, authLoading, router]);
@@ -199,7 +200,13 @@ export default function GuestPlay() {
                 <div className="max-w-xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <img src={player.iconUrl} className="w-12 h-12 rounded-xl border border-amber-500 bg-black/40" alt="" />
+                            <Image
+                                src={player.iconUrl}
+                                alt={player.name}
+                                width={48}
+                                height={48}
+                                className="rounded-xl border border-amber-500 bg-black/40 object-cover"
+                            />
                             <Badge className="absolute -bottom-2 -right-2 bg-amber-500 text-black border-none text-[10px] px-1 font-black">PLAYER</Badge>
                         </div>
                         <div>
@@ -242,7 +249,13 @@ export default function GuestPlay() {
                                     {currentQuestion.text}
                                 </h2>
                                 {currentQuestion.imageUrl && (
-                                    <img src={currentQuestion.imageUrl} className="w-full h-40 object-cover rounded-xl border border-white/10 mb-6" alt="" />
+                                    <Image
+                                        src={currentQuestion.imageUrl}
+                                        alt="question"
+                                        width={600}
+                                        height={160}
+                                        className="w-full h-40 object-cover rounded-xl border border-white/10 mb-6"
+                                    />
                                 )}
                             </CardContent>
                         </Card>

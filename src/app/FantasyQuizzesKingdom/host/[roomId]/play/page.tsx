@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot, collection, updateDoc, query, orderBy, increment } from "firebase/firestore";
+import { doc, onSnapshot, collection, updateDoc, query, orderBy, increment, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Play, ChevronRight, Trophy, Timer, Swords, ShieldCheck, Crown, Shield, XCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FantasyCountdown from "@/app/FantasyQuizzesKingdom/components/FantasyCountdown";
+import Image from "next/image";
 
 export default function HostPlay() {
     const { roomId } = useParams() as { roomId: string };
@@ -57,7 +58,7 @@ export default function HostPlay() {
         });
 
         const questionsRef = query(collection(db, "rooms", roomId, "questions"), orderBy("createdAt", "asc"));
-        const unsubscribeQuestions = onSnapshot(questionsRef, (snapshot) => {
+        getDocs(questionsRef).then((snapshot) => {
             setQuestions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         });
 
@@ -68,7 +69,7 @@ export default function HostPlay() {
 
         return () => {
             unsubscribeRoom();
-            unsubscribeQuestions();
+            // unsubscribeQuestions(); // No longer needed
             unsubscribePlayers();
         };
     }, [roomId, user, authLoading, router]);
@@ -330,7 +331,13 @@ export default function HostPlay() {
                             </CardHeader>
                             <CardContent className="p-10 pt-4 flex flex-col items-center">
                                 {currentQuestion.imageUrl ? (
-                                    <img src={currentQuestion.imageUrl} alt="question" className="max-w-md w-full rounded-2xl shadow-2xl mb-8 border-4 border-amber-900/30" />
+                                    <Image
+                                        src={currentQuestion.imageUrl}
+                                        alt="question"
+                                        width={500}
+                                        height={300}
+                                        className="max-w-md w-full rounded-2xl shadow-2xl mb-8 border-4 border-amber-900/30 object-cover"
+                                    />
                                 ) : (
                                     <div className="h-40 flex items-center justify-center opacity-10">
                                         <Timer className="h-32 w-32 text-amber-500" />
@@ -441,7 +448,13 @@ export default function HostPlay() {
                                                         {idx + 1}
                                                     </span>
                                                     <div className="relative">
-                                                        <img src={player.iconUrl} className="w-10 h-10 rounded-full border border-white/10" alt="" />
+                                                        <Image
+                                                            src={player.iconUrl}
+                                                            alt={player.name}
+                                                            width={40}
+                                                            height={40}
+                                                            className="rounded-full border border-white/10 object-cover"
+                                                        />
                                                         {idx === 0 && <Crown className="absolute -top-3 -left-3 h-5 w-5 text-amber-500 rotate-[-20deg]" />}
                                                     </div>
                                                     <span className="font-bold truncate max-w-[100px] text-amber-100 group-hover:text-white transition-colors">{player.name}</span>

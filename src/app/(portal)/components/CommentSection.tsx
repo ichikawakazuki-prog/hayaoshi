@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, limit, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@/lib/auth-context';
 import { Send, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -21,23 +21,31 @@ export default function CommentSection({ slug }: { slug: string }) {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Real-time listener for comments
-        const q = query(
-            collection(db, 'posts_stats', slug, 'comments'),
-            orderBy('createdAt', 'desc')
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const commentsData = snapshot.docs.map(doc => ({
+    const fetchComments = async () => {
+        setLoading(true);
+        try {
+            const q = query(
+                collection(db, 'posts_stats', slug, 'comments'),
+                orderBy('createdAt', 'desc'),
+                limit(20)
+            );
+            const querySnapshot = await getDocs(q);
+            const commentsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             })) as Comment[];
             setComments(commentsData);
-        });
+        } catch (error) {
+            console.error("Error fetching comments:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        return () => unsubscribe();
+    useEffect(() => {
+        fetchComments();
     }, [slug]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -46,13 +54,22 @@ export default function CommentSection({ slug }: { slug: string }) {
 
         setSubmitting(true);
         try {
-            await addDoc(collection(db, 'posts_stats', slug, 'comments'), {
+            const newCommentData = {
                 text: newComment.trim(),
                 userId: user.uid,
                 userName: user.displayName || 'Anonymous',
                 userAvatar: user.photoURL || '',
                 createdAt: serverTimestamp()
-            });
+            };
+
+            const docRef = await addDoc(collection(db, 'posts_stats', slug, 'comments'), newCommentData);
+
+            // Optimistic update - add to top of list immediately
+            setComments(prev => [{
+                ...newCommentData,
+                id: docRef.id,
+                createdAt: Timestamp.now()
+            } as Comment, ...prev]);
 
             // Increment comment count in parent doc
             const parentDocRef = doc(db, 'posts_stats', slug);
