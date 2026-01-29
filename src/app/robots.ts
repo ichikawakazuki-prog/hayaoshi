@@ -7,7 +7,13 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/FantasyQuizzesKingdom/admin', '/FantasyQuizzesKingdom/room/', '/FantasyQuizzesKingdom/host/'],
+            disallow: [
+                '/FantasyQuizzesKingdom/admin',
+                '/FantasyQuizzesKingdom/room/',
+                '/FantasyQuizzesKingdom/host/',
+                '/FantasyQuizzesKingdom/debug',
+                '/FantasyQuizzesKingdom/design-preview',
+            ],
         },
         sitemap: `${baseUrl}/sitemap.xml`,
     }
