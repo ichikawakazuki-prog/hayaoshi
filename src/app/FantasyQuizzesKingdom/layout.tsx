@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/Footer";
+import InstallPwaPrompt from "./components/InstallPwaPrompt";
 import Script from "next/script";
 
 import type { Metadata } from "next";
@@ -40,6 +41,7 @@ export default function QuizLayout({
                 <div className="flex-grow">
                     {children}
                 </div>
+                <InstallPwaPrompt />
                 <Footer />
                 <Toaster />
             </AuthProvider>
